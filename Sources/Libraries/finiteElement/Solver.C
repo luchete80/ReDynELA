@@ -182,10 +182,10 @@ void Solver::progressWrite()
   String st;
   Real interval;
 
-  interval = theclock.getInterval();
+  // interval = theclock.getInterval();
 
-  if (interval < 10)
-    frequencyReports *= 10;
+  // if (interval < 10)
+    // frequencyReports *= 10;
 
   st = "." + parsedFileName.before(sourceFileExtension) + progressFileExtension;
   FILE *fprogress = fopen(st.chars(), "w");

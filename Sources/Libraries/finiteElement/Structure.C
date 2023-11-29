@@ -40,7 +40,7 @@
 
 Structure *Global_Structure = NULL; // initialisation par défaut sur NULL
 extern String parsedFileName;
-extern CPUrecord recordTimes;
+//extern CPUrecord //recordTimes;
 
 /*!
   \file Structure.C
@@ -884,7 +884,7 @@ void Structure::solve()
 
   cout << "end of solve\n";
   // print the CPU times
-  recordTimes.report("CPU-TIMES");
+  //recordTimes.report("CPU-TIMES");
 
   // Stop the timer for the solver
   cpuTimes.timer("Solver")->stop();
