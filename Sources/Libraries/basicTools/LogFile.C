@@ -30,7 +30,7 @@
 */
 
 #include <LogFile.h>
-#include <Unix.h>
+// #include <Unix.h>
 #include <Error.h>
 
 //!Constructeur de la classe LogFile
@@ -183,15 +183,15 @@ void LogFile::out(String str)
 void LogFile::headerWrite()
 //-----------------------------------------------------------------------------
 {
-  Unix os;
+  //Unix os;
 
   // write the header of the file
   stream << "DynELA v. " << VERSION << "." << RELEASE << "." << UNDER_RELEASE << "-" << ALPHA_VERSION << endl;
-  stream << os.getCurrDate() << endl;
-  stream << "Job created by user " << os.getCurrEnvValue("LOGNAME") << endl;
-  stream << "Job executed on a " << os.getCurrHosttype() << " system\n";
-  stream << "Name of the host " << os.getCurrHostname() << endl;
-  stream << "Host ID " << os.getCurrHostId() << endl;
+  //stream << os.getCurrDate() << endl;
+  //stream << "Job created by user " << os.getCurrEnvValue("LOGNAME") << endl;
+  //stream << "Job executed on a " << os.getCurrHosttype() << " system\n";
+  //stream << "Name of the host " << os.getCurrHostname() << endl;
+  //stream << "Host ID " << os.getCurrHostId() << endl;
   stream << endl
          << endl;
 

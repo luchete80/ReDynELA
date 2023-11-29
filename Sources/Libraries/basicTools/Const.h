@@ -34,7 +34,7 @@
 #define __Const_h__
 
 #include <upBasicTools.h>
-#include <sys/types.h>
+// #include <sys/types.h>
 #include <unistd.h>
 
 using namespace std;

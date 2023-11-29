@@ -61,7 +61,7 @@ typedef enum
   \param param \b int value to be converted into a \b Boolean
   \return \b Boolean resulting from the conversion. Returned value is \b False if the parameter \b param is zero, \b True in all the other cases
 */
-inline Boolean getBooLean(int param)
+inline BooLean getBooLean(int param)
 {
   return (param == 0 ? False : True);
 }
@@ -72,7 +72,7 @@ inline Boolean getBooLean(int param)
   \param b Boolean value valeur that we want to negate
   \return \c True if the given parameter is \c False. \c False if the given parameter is \c True.
 */
-inline Boolean notBooLean(Boolean b)
+inline BooLean notBooLean(BooLean b)
 {
   return (b ? False : True);
 }
@@ -83,7 +83,7 @@ inline Boolean notBooLean(Boolean b)
   \param param \b int value to be converted into a \b Boolean
   \return Boolean resulting from the conversion. Returned value is \b True if the parameter \b param is zero, \b False in all the other cases
 */
-inline Boolean notBooLean(int param)
+inline BooLean notBooLean(int param)
 {
   return (getBooLean(!param));
 }

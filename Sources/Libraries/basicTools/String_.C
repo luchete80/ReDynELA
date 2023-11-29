@@ -18,7 +18,7 @@
 // revision date :
 
 #include <iostream>
-#include <String.h>
+#include "String_.h"
 #include <Boolean.h>
 
 /*!

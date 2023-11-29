@@ -38,7 +38,7 @@
 #ifndef __ObjectList_h__
 #define __ObjectList_h__
 
-#include <String.h>
+#include "String_.h"
 #include <List.h>
 
 class ObjectsList;

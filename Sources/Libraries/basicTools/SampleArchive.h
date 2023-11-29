@@ -19,7 +19,7 @@
 
 #ifndef __SampleArchive_h__
 #define __SampleArchive_h__
-#include <String.h>
+#include "String_.h"
 #include <List.h>
 #include <sys/stat.h>
 #include <sys/types.h>

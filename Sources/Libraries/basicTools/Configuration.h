@@ -28,8 +28,9 @@
 #ifndef __Configuration_h__
 #define __Configuration_h__
 
-#include <Const.h>
+#include "Const.h"
 #include <List.h>
+#include "String_.h"
 
 #define magicConfigurationString "#DynELA configuration file v. 2.0"                                                                  //!< Defines the magic header of the configuration file
 #define getConfParameter(CONF, PAR) (CONF.getParameter(PAR##Param) == "" ? String(PAR##DefaultValue) : CONF.getParameter(PAR##Param)) //!< Returns the value (a String) of the stored parameter in the configuration file or the default value if not present in the configuration file.

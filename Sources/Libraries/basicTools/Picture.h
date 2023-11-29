@@ -36,7 +36,7 @@
 #ifndef __Picture_h__
 #define __Picture_h__
 
-#include <String.h>
+#include "String_.h"
 
 #define BUFFER_TYPE unsigned long
 
