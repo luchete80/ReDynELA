@@ -40,6 +40,12 @@
 
 #include <Structure.h>
 
+int compareIndice(const void *p1, const void *p2)
+//-----------------------------------------------------------------------------
+{
+  return *((Indice *)p1) < *((Indice *)p2);
+}
+
 //!constructeur de la classe NodeSet
 /*!
   Cette m�thode construit un NodeSet vide.
