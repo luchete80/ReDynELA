@@ -1,5 +1,5 @@
 #include "f2c.h"
-#include <sys/times.h>
+// #include <sys/times.h>
 #include <sys/types.h>
 #include <time.h>
 
@@ -9,10 +9,10 @@
 
 doublereal dsecnd_()
 {
-  struct tms rusage;
+  // struct tms rusage;
 
-  times(&rusage);
-  return (doublereal)(rusage.tms_utime) / CLK_TCK;
+  // times(&rusage);
+  // return (doublereal)(rusage.tms_utime) / CLK_TCK;
 
 } /* dsecnd_ */
 
