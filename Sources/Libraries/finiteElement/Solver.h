@@ -65,7 +65,7 @@ public:
 
 private:
   /** @dia:route 0,2;h,-85.6,-130.75,43,-66.4794,99.0353 */
-  CPUclock theclock;
+  // CPUclock theclock;
 
 protected:
   Indice frequencyReports;

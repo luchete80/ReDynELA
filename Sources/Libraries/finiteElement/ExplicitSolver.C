@@ -94,7 +94,7 @@ void ExplicitSolver::solve(Real _upTime)
 //-----------------------------------------------------------------------------
 {
       // cpu times record
-      static CPUrecord recordTimes;
+      //static CPUrecord //recordTimes;
 
       // first we set the up-time
       upTime = _upTime;
@@ -109,11 +109,11 @@ void ExplicitSolver::solve(Real _upTime)
 
             // calcul du time step minimal de la structure
 #ifdef computeTimes
-            recordTimes.start("Time step");
+            //recordTimes.start("Time step");
 #endif
             computeTimeStep();
 #ifdef computeTimes
-            recordTimes.stop("Time step");
+            //recordTimes.stop("Time step");
 #endif
 
             // affichage de l'incr�ment courant tous les 100 incr�ments
@@ -132,128 +132,128 @@ void ExplicitSolver::solve(Real _upTime)
 
             // phase dite de prediction correspondant � l'algorithme explicite
 #ifdef computeTimes
-            recordTimes.start("Predictions");
+            //recordTimes.start("Predictions");
 #endif
             computePredictions();
 #ifdef computeTimes
-            recordTimes.stop("Predictions");
+            //recordTimes.stop("Predictions");
 #endif
 
             // mise a jour des coordonn�es de la grille
 #ifdef computeTimes
-            recordTimes.start("Grid motion");
+            //recordTimes.start("Grid motion");
 #endif
             updateGrid();
 #ifdef computeTimes
-            recordTimes.stop("Grid motion");
+            //recordTimes.stop("Grid motion");
 #endif
 
             // calcul des deformations
 #ifdef computeTimes
-            recordTimes.start("Strains compute");
+            //recordTimes.start("Strains compute");
 #endif
             computeStrains();
 #ifdef computeTimes
-            recordTimes.stop("Strains compute");
+            //recordTimes.stop("Strains compute");
 #endif
 
             // calcul du domaine parent et de det J
 #ifdef computeTimes
-            recordTimes.start("DetJ computation");
+            //recordTimes.start("DetJ computation");
 #endif
             domain->computeInternalMatrices();
 #ifdef computeTimes
-            recordTimes.stop("DetJ computation");
+            //recordTimes.stop("DetJ computation");
 #endif
 
             // integration des lois constitutives
 #ifdef computeTimes
-            recordTimes.start("Compute constitutive");
+            //recordTimes.start("Compute constitutive");
 #endif
             computeConstitutive();
 #ifdef computeTimes
-            recordTimes.stop("Compute constitutive");
+            //recordTimes.stop("Compute constitutive");
 #endif
 
             // integration de la loi d'etat
 #ifdef computeTimes
-            recordTimes.start("State law");
+            //recordTimes.start("State law");
 #endif
             computeState();
 #ifdef computeTimes
-            recordTimes.stop("State law");
+            //recordTimes.stop("State law");
 #endif
 
             // calcul des contraintes
 #ifdef computeTimes
-            recordTimes.start("Stress computation");
+            //recordTimes.start("Stress computation");
 #endif
             computeStress();
 #ifdef computeTimes
-            recordTimes.stop("Stress computation");
+            //recordTimes.stop("Stress computation");
 #endif
 
             // integration de la masse
 #ifdef computeTimes
-            recordTimes.start("Mass integration");
+            //recordTimes.start("Mass integration");
 #endif
             computeMass();
 #ifdef computeTimes
-            recordTimes.stop("Mass integration");
+            //recordTimes.stop("Mass integration");
 #endif
 
             // integration de la quantite de mouvement
 #ifdef computeTimes
-            recordTimes.start("Momentum integration");
+            //recordTimes.start("Momentum integration");
 #endif
             computeMomentum();
 #ifdef computeTimes
-            recordTimes.stop("Momentum integration");
+            //recordTimes.stop("Momentum integration");
 #endif
 
             // integration de l'energie et calcul des masses nodales pour le contact
 #ifdef computeTimes
-            recordTimes.start("Energy integration");
+            //recordTimes.start("Energy integration");
 #endif
             computeEnergy();
 #ifdef computeTimes
-            recordTimes.stop("Energy integration");
+            //recordTimes.stop("Energy integration");
 #endif
 
             // phase de correction
 #ifdef computeTimes
-            recordTimes.start("Corrections");
+            //recordTimes.start("Corrections");
 #endif
             computeCorrections();
 #ifdef computeTimes
-            recordTimes.stop("Corrections");
+            //recordTimes.stop("Corrections");
 #endif
 
             // calcul des temperatures
 #ifdef computeTimes
-            recordTimes.start("Temperatures");
+            //recordTimes.start("Temperatures");
 #endif
             computeTemperatures();
 #ifdef computeTimes
-            recordTimes.stop("Temperatures");
+            //recordTimes.stop("Temperatures");
 #endif
 
             // scan des interfaces
 #ifdef computeTimes
-            recordTimes.start("Interfaces");
+            //recordTimes.start("Interfaces");
 #endif
             scanInterfaces();
 #ifdef computeTimes
-            recordTimes.stop("Interfaces");
+            //recordTimes.stop("Interfaces");
 #endif
 
             // calcul des efforts de contact
 #ifdef computeTimes
-            recordTimes.start("Contact forces");
+            //recordTimes.start("Contact forces");
 #endif
             computeContactForces();
 #ifdef computeTimes
-            recordTimes.stop("Contact forces");
+            //recordTimes.stop("Contact forces");
 #endif
 
             // update du time
@@ -265,25 +265,25 @@ void ExplicitSolver::solve(Real _upTime)
             fflush(domain->history_file);
 
 #ifdef computeTimes
-            recordTimes.start("History files");
+            //recordTimes.start("History files");
 #endif
             domain->writeHistoryFiles();
 #ifdef computeTimes
-            recordTimes.stop("History files");
+            //recordTimes.stop("History files");
 #endif
 
             // transfert des valeurs d'un incr�ment a l'autre
 #ifdef computeTimes
-            recordTimes.start("Transfert increment");
+            //recordTimes.start("Transfert increment");
 #endif
             domain->transfertQuantities();
 #ifdef computeTimes
-            recordTimes.stop("Transfert increment");
+            //recordTimes.stop("Transfert increment");
 #endif
       }
 
       // print the CPU times
-      recordTimes.report("CPU-TIMES");
+      //recordTimes.report("CPU-TIMES");
 }
 
 //-----------------------------------------------------------------------------

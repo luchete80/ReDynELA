@@ -33,7 +33,7 @@
 #include <IntegrationPoint.h>
 #include <NodalField.h>
 
-extern CPUrecord recordTimes;
+// extern CPUrecord recordTimes;
 
 #ifdef G2TR_STUDY
 #include <Domain.h>

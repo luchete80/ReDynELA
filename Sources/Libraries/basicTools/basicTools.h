@@ -41,10 +41,10 @@
 #include <Error.h>
 #include <Exception.h>
 #include <List.h>
-#include <CPUclock.h>
-#include <String.h>
+// #include <CPUclock.h>
+#include "String_.h"
 #include <Stack.h>
-#include <Unix.h>
+// #include <Unix.h>
 #include <Picture.h>
 #include <Configuration.h>
 #include <ObjectList.h>

@@ -40,7 +40,7 @@
 #endif
 
 extern String parsedFileName;
-extern CPUrecord recordTimes;
+// extern CPUrecord //recordTimes;
 
 Jobs mach;
 Jobs timeStepWork;
@@ -145,10 +145,10 @@ void Domain::computeInternalForces()
   Fint.redim(noddl);
   Fint = 0.0;
 
-  Unix un;
+  // Unix un;
   String st;
   Indice cas;
-  st = un.getCurrEnvValue("computeInternalForces");
+  // st = un.getCurrEnvValue("computeInternalForces");
   st.popInt(cas);
 
   switch (cas)
@@ -826,7 +826,7 @@ Real Domain::getMaximumFrequency()
   Indice noddl = numberOfDim * nodes.size();
   List<Element *> listOfElements = elements;
 
-  recordTimes.start("LOOP1");
+  // //recordTimes.start("LOOP1");
 
   //  Initial maping of processors
   timeStepWork.mapInitial(elements);
@@ -845,7 +845,7 @@ Real Domain::getMaximumFrequency()
     }
   }
 
-  recordTimes.stop("LOOP1");
+  //recordTimes.stop("LOOP1");
 
   Indice loop_el = elements.size();
 
@@ -870,7 +870,7 @@ Real Domain::getMaximumFrequency()
     iteration++;
     EV0 = EV_TimeStep;
 
-    recordTimes.start("LOOP2");
+    //recordTimes.start("LOOP2");
 
 #pragma omp parallel private(pel)
     {
@@ -899,8 +899,8 @@ Real Domain::getMaximumFrequency()
         delete[] ind;
       }
     }
-    recordTimes.stop("LOOP2");
-    recordTimes.start("LOOP3");
+    //recordTimes.stop("LOOP2");
+    //recordTimes.start("LOOP3");
     for (Indice i = 0; i < threads; i++)
       Fmax[i] = 0.0;
 
@@ -923,7 +923,7 @@ Real Domain::getMaximumFrequency()
         fmax = Fmax[i];
 
     EV_TimeStep /= fmax;
-    recordTimes.stop("LOOP3");
+    //recordTimes.stop("LOOP3");
 
     convergence = Abs(fmax - fmax0) / fmax;
 

@@ -38,7 +38,7 @@ extern Structure *Global_Structure;
 extern String parsedFileName;
 
 // cpu times record
-CPUrecord recordTimes;
+//CPUrecord recordTimes;
 #define computeCpuTimes
 
 /*!
@@ -128,36 +128,36 @@ void ExplicitSolverCH::solve(Real _upTime)
     // calcul préliminaire des matrices internes
     // initialisation du step de calcul
 #ifdef computeCpuTimes
-  recordTimes.start("Internal_Matrices");
+  //recordTimes.start("Internal_Matrices");
   Global_Structure->cpuTimes.timer("computeInternalMatrices")->start();
 #endif
   domain->computeInternalMatrices();
   // initialisation du step de calcul
 #ifdef computeCpuTimes
   Global_Structure->cpuTimes.timer("computeInternalMatrices")->stop();
-  recordTimes.stop("Internal_Matrices");
+  //recordTimes.stop("Internal_Matrices");
 #endif
 
   // calcul de la matrice de masse
 #ifdef computeCpuTimes
-  recordTimes.start("Mass_Matrices");
+  //recordTimes.start("Mass_Matrices");
 #endif
   domain->computeMassMatrix();
 #ifdef computeCpuTimes
-  recordTimes.stop("Mass_Matrices");
+  //recordTimes.stop("Mass_Matrices");
 #endif
 
   // initial contact
 
   // calcul des forces internes
 #ifdef computeCpuTimes
-  recordTimes.start("Internal_Forces");
+  //recordTimes.start("Internal_Forces");
   Global_Structure->cpuTimes.timer("computeInternalForces")->start();
 #endif
   domain->computeInternalForces();
 #ifdef computeCpuTimes
   Global_Structure->cpuTimes.timer("computeInternalForces")->stop();
-  recordTimes.stop("Internal_Forces");
+  //recordTimes.stop("Internal_Forces");
 #endif
 
   // calcul des forces d'inertie
@@ -166,13 +166,13 @@ void ExplicitSolverCH::solve(Real _upTime)
 
   // calcul du pas de temps critique de la structure
 #ifdef computeCpuTimes
-  recordTimes.start("Time_Step");
+  //recordTimes.start("Time_Step");
   Global_Structure->cpuTimes.timer("computeTimeStep")->start();
 #endif
   computeTimeStep(True);
 #ifdef computeCpuTimes
   Global_Structure->cpuTimes.timer("computeTimeStep")->stop();
-  recordTimes.stop("Time_Step");
+  //recordTimes.stop("Time_Step");
 #endif
 
   // boucle sur le temps
@@ -180,11 +180,11 @@ void ExplicitSolverCH::solve(Real _upTime)
   {
     // initialisation du step de calcul
 #ifdef computeCpuTimes
-    recordTimes.start("Init_Step");
+    //recordTimes.start("Init_Step");
 #endif
     initStep();
 #ifdef computeCpuTimes
-    recordTimes.stop("Init_Step");
+    //recordTimes.stop("Init_Step");
 #endif
 
     // affichage de l'incrément courant tous les 100 incréments
@@ -204,40 +204,40 @@ void ExplicitSolverCH::solve(Real _upTime)
     // prediction des quantités
     // phase dite de prediction correspondant à l'algorithme explicite
 #ifdef computeCpuTimes
-    recordTimes.start("Predictions");
+    //recordTimes.start("Predictions");
 #endif
     computePredictions();
 #ifdef computeCpuTimes
-    recordTimes.stop("Predictions");
+    //recordTimes.stop("Predictions");
 #endif
 
     // detection du contact
 
     // initialisation de l'iteration de calcul
 #ifdef computeCpuTimes
-    recordTimes.start("Init_Iteration");
+    //recordTimes.start("Init_Iteration");
 #endif
     initIteration();
 #ifdef computeCpuTimes
-    recordTimes.stop("Init_Iteration");
+    //recordTimes.stop("Init_Iteration");
 #endif
 
     // r�solution implicite ou explicite de l'iteration
 #ifdef computeCpuTimes
-    recordTimes.start("Explicit_Solve");
+    //recordTimes.start("Explicit_Solve");
 #endif
     explicitSolve();
 #ifdef computeCpuTimes
-    recordTimes.stop("Explicit_Solve");
+    //recordTimes.stop("Explicit_Solve");
 #endif
 
     // fin du step
 #ifdef computeCpuTimes
-    recordTimes.start("End_Step");
+    //recordTimes.start("End_Step");
 #endif
     endStep();
 #ifdef computeCpuTimes
-    recordTimes.stop("End_Step");
+    //recordTimes.stop("End_Step");
 #endif
 
     // test de fin de calcul
@@ -250,31 +250,31 @@ void ExplicitSolverCH::solve(Real _upTime)
     if (runStep)
     {
 #ifdef computeCpuTimes
-      recordTimes.start("Internal_Matrices");
+      //recordTimes.start("Internal_Matrices");
       Global_Structure->cpuTimes.timer("computeInternalMatrices")->start();
 #endif
       domain->computeInternalMatrices();
       // initialisation du step de calcul
 #ifdef computeCpuTimes
       Global_Structure->cpuTimes.timer("computeInternalMatrices")->stop();
-      recordTimes.stop("Internal_Matrices");
+      //recordTimes.stop("Internal_Matrices");
 #endif
 
       // calcul du pas de temps critique de la structure
 #ifdef computeCpuTimes
-      recordTimes.start("Time_Step");
+      //recordTimes.start("Time_Step");
       Global_Structure->cpuTimes.timer("computeTimeStep")->start();
 #endif
       computeTimeStep();
 #ifdef computeCpuTimes
       Global_Structure->cpuTimes.timer("computeTimeStep")->stop();
-      recordTimes.stop("Time_Step");
+      //recordTimes.stop("Time_Step");
 #endif
     }
   }
 
   // print the CPU times
-  //  recordTimes.report("CPU-TIMES");
+  //  //recordTimes.report("CPU-TIMES");
 }
 
 //!Renvoie le paramètre \f$\alpha_M\f$ de l'intégration de Chung-Hulbert

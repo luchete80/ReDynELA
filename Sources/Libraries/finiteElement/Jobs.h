@@ -10,7 +10,7 @@ class Jobs;
 
 class Job
 {
-  tms time; //<! time of the processor
+  // tms time; //<! time of the processor
   Indice delay;
   friend class Jobs;
   Jobs *mach;
