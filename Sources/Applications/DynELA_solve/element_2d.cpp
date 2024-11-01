@@ -96,7 +96,7 @@ int main() {
   //sf->addNode(model->getNodeByNumber(4));
   //elside.addSideFace(sf);
 	
-  //elside.addNodeSet(&topNS);
+  elside.addNodeSet(&topNS);
   cout << "Init Side "<<endl;
   elside.Init();
 
