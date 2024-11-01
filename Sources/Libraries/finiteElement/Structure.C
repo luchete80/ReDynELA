@@ -792,7 +792,7 @@ void Structure::saveResults()
   {
 
     // transfer the datas
-    cout <<"TRANSFERING"<<endl;
+    //cout <<"TRANSFERING"<<endl;
     resultFile->transfert();
 
     // increment saveTimes
