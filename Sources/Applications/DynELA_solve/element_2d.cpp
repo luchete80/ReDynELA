@@ -159,6 +159,7 @@ steel.setHardening(&hard);
 
 
   // BoundaryRestrain bottomBC ("BC_bottom");
+  BoundaryRestrain bottomBC;
   // bottomBC.setValue(1, 1, 1);
   // model.attachConstantBC(&bottomBC, &bottomNS);
 
