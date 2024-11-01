@@ -45,6 +45,8 @@ Jobs::Jobs()
 //-----------------------------------------------------------------------------
 {
   // construct the list of processors
+  cout << "omp_get_max_threads " <<omp_get_max_threads<<endl;
+  
   for (Indice i = 0; i < omp_get_max_threads(); i++)
   {
     Job *proc = new Job(this);
@@ -131,7 +133,7 @@ void Jobs::mapInitial(List<Element *> lel)
 {
   if (init)
     return;
-
+  cout << "MAPPING"<<endl;
   List<Element *> lelLoc;
 
   Indice nb = lel.size();
@@ -139,11 +141,15 @@ void Jobs::mapInitial(List<Element *> lel)
 
   for (i = 0; i < nb; i++)
     lelLoc << lel(i);
+    
+  cout << "l el local size "<<lelLoc.size()<<endl;
   //   // z sort
   lelLoc.sort(compareElementJobsSort);
 
   // nombre de processeurs
   Indice np = procs.size();
+  
+  cout << "processors size "<<np<<endl;
 
   // nombre par proc
   Real nppr = ((Real)(nb)) / np;
@@ -186,6 +192,7 @@ void Jobs::displayCPU()
 {
   for (Indice i = 0; i < procs.size(); i++)
   {
+    cout << "omp_get_max_threads"<<omp_get_max_threads<<endl;
     cout << "Job " << i << " -> " << procs(i)->elementsList.size() << " elements" << endl;
   }
 }

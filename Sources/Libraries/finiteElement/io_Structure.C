@@ -53,6 +53,7 @@ void io_Structure::transfert()
 
   if (pstructure == NULL)
   {
+    cout <<"NULL"<<endl;
     cerr << "Fatal Error\nMust use link function to attach a structure before call to transfert";
     exit(-1);
   }

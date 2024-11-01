@@ -792,6 +792,7 @@ void Structure::saveResults()
   {
 
     // transfer the datas
+    cout <<"TRANSFERING"<<endl;
     resultFile->transfert();
 
     // increment saveTimes
@@ -847,7 +848,7 @@ void Structure::solve()
       if (domains(0)->solve(nextTime) == False)
       {
         Global_Structure->saveResults();
-        fatalError("Solver Error", "Unable to solve problem upto time = %10.3E\n", nextTime);
+        fatalError("Solver Error", "Unable to solve problem up to time = %10.3E\n", nextTime);
       }
 
       // r�cup�ration du temps de la structure

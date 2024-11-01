@@ -101,10 +101,12 @@ void Domain::computeInternalMatrices()
 #ifdef PRINT_Execution_Solve
   cout << "Calcul des matrices internes\n";
 #endif
-
+  
+  //cout << "Internal mats"<<endl;
   // map the work on processors
+  //cout << "elements size "<<elements.size()<<endl;
   internalMatricesWork.mapInitial(elements);
-
+  //cout << "DONE"<<endl;
 #pragma omp parallel
   {
     Job *work;
@@ -115,7 +117,7 @@ void Domain::computeInternalMatrices()
 
     // get the first
     work->first();
-
+    //cout << "WHILE"<<endl;
     // loop over the elements of the work
     while ((pel = work->currentUp()) != NULL)
     {
@@ -150,7 +152,8 @@ void Domain::computeInternalForces()
   Indice cas;
   // st = un.getCurrEnvValue("computeInternalForces");
   st.popInt(cas);
-
+  
+  cout << "CASE: "<<cas<<endl;
   switch (cas)
   {
     //Parall�lisation de base boucle for simple avec omp critical sur le calcul de Fint
@@ -1060,7 +1063,7 @@ Boolean Domain::initSolve()
       fatalError("Grid topology verification\n",
                  "Mixed Topology found in element %d \n", i);
     }
-  cout << "DONE"<<endl;
+
   // log file
   (*Global_Structure->logFile) << "Grid topology : " << (elements(0)->getFamily() == Element::Bidimensional ? "2D" : elements(0)->getFamily() == Element::Axisymetric ? "2D Axi" : "3D") << "\n";
 
@@ -1269,6 +1272,7 @@ Domain::solve(Real upTime)
   }
 
   // check the right solver
+  //cout << "SOLVER SIZE "<<solvers.size()<<endl;
   for (i = 0; i < solvers.size(); i++)
   {
     // get the solver
@@ -1282,6 +1286,7 @@ Domain::solve(Real upTime)
 
   if (!ok)
   {
+    cout << "OOO" <<endl;
     fatalError("No solver available", "to compute at time=%10.3E\nup to time %10.3E", currentTime, upTime);
   }
 

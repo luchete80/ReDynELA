@@ -98,10 +98,11 @@ void ExplicitSolver::solve(Real _upTime)
 
       // first we set the up-time
       upTime = _upTime;
-
+      //cout << "Matrices"<<endl;
       // premier calcul de determinant
       domain->computeInternalMatrices();
 
+      //cout << "DONE "<<endl;
       while (betweenTimeBounds())
       {
             // incrementation du nombre d'incr�ments
