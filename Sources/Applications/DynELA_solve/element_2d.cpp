@@ -49,7 +49,20 @@ int main() {
 
 
 */
+  Real elem_x, elem_y;
   Element* el = new ElQua4nAx(1);
+
+  Real nbNodes=1;
+  Real i;
+  Real j;
+  for (j=0;j<=nbElementsHauteur;j+=1) 
+    for (i=0;i<=nbElementsLargeur;i+=1) {
+      struct.createNode(nbNodes,i*dxLargeur,j*dxHauteur,0);
+      cylinderNds.add(nbNodes);
+      nbNodes++;
+  };
+  nbNodes--;
+
 /*
   Element* el2 = new ElQua4nAx(2);
   Indice *ind = new Indice[4];
@@ -184,6 +197,12 @@ steel.setHardening(&hard);
   // model.add(&solver);
   // model.setSaveTimes(0, stopTime, stopTime / nbreSaves);
 
+
+    NodeSet axis;
+    axis.add(1,nbNodes,elem_x+1);
+    BoundaryRestrain axisDisp;
+    axisDisp.set(1, 0, 1);
+    Global_Structure->attachConstantBC(&axisDisp,&axis);
 
   // HistoryFile vonMisesHist("vonMisesHistory");
 
