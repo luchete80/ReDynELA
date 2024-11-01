@@ -113,7 +113,7 @@ int main() {
   
   // omp_set_num_threads(1);
 	
-  //NodeSet bottomNS;   
+  NodeSet bottomNS;   
   //bottomNS.add(1,2,1);
   // NodeSet bottomNSy("NS_Bottomy"); model.add(&bottomNS, 2);
   // NodeSet bottomNSx("NS_Bottomx"); model.add(&bottomNS, 3);
@@ -161,7 +161,7 @@ steel.setHardening(&hard);
   // BoundaryRestrain bottomBC ("BC_bottom");
   BoundaryRestrain bottomBC;
   // bottomBC.setValue(1, 1, 1);
-  // model.attachConstantBC(&bottomBC, &bottomNS);
+ // model.attachConstantBC(&bottomBC, &bottomNS);
 
   // BoundaryRestrain bottomBCx ("BC_bottomxz");
   // bottomBC.setValue(1, 0, 1);
