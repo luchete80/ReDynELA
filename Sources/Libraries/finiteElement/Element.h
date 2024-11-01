@@ -157,6 +157,7 @@ public:
         ElQua4n2D,
         ElTri3n2D,
         ElQua4nAx,
+        ElTri3nAx,
         ElHex8n3D,
         ElTet4n3D,
         ElTet10n3D
