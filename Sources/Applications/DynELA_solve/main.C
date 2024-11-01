@@ -20,6 +20,50 @@
 #include <InputDyn.h>
 
 //-----------------------------------------------------------------------------
+char *ArgumentsLineGet(char *rr, int argc, char **argv)
+//-----------------------------------------------------------------------------
+{
+  // boucle de parsing des arguments
+  for (Indice i = 1; i < argc; i++)
+  {
+
+    // test d'argument
+    if (strcmp(rr, argv[i] + 1) == 0)
+    {
+      // cout << argv[i]+1 << " ";
+
+      // retour
+      return argv[i + 1];
+    }
+  }
+
+  // retour
+  return NULL;
+}
+
+//-----------------------------------------------------------------------------
+Boolean ArgumentsLineParse(char *rr, int argc, char **argv)
+//-----------------------------------------------------------------------------
+{
+  // boucle de parsing des arguments
+  for (Indice i = 1; i < argc; i++)
+  {
+
+    // test d'argument
+    if (strncmp(rr, argv[i] + 1, strlen(rr)) == 0)
+    {
+      // cout << argv[i]+1 << " ";
+
+      // retour
+      return True;
+    }
+  }
+
+  // retour
+  return False;
+}
+
+//-----------------------------------------------------------------------------
 void Presentation()
 //-----------------------------------------------------------------------------
 {
@@ -59,10 +103,10 @@ int main(int argc, char **argv)
   // parsing des lignes d'arguments
 //  if (ArgumentsLineParse("times",argc,argv)==True) displayExecutionTimesFlag=True;
 //  if (ArgumentsLineParse("no_history",argc,argv)==True) historyFile=False;
-  if (ArgumentsLineParse("help",argc,argv)==True) {
-    syntaxePrint(); 
-    exit(0);
-  }
+  //if (ArgumentsLineParse("help",argc,argv)==True) {
+  //  syntaxePrint(); 
+  //  exit(0);
+  //}
 
   // comptage des arguments
   if (argc < 2) {

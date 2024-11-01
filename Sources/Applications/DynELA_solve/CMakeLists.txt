@@ -10,13 +10,19 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
 	${SOURCE_LIBRARY_DIRECTORY}/lapack 
 	${SOURCE_LIBRARY_DIRECTORY}/linearAlgebra 
 	${SOURCE_LIBRARY_DIRECTORY}/finiteElement
-	${SOURCE_LIBRARY_DIRECTORY}/interpretor)
+	${SOURCE_LIBRARY_DIRECTORY}/interpretor
+  ${SOURCE_LIBRARY_DIRECTORY}/lsdyna)
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
 #ADD_DEFINITIONS(-Wall -O2)
 
 # Création d'un exécutable
-ADD_EXECUTABLE(DynELA_solve ${SRCS})
-TARGET_LINK_LIBRARIES(DynELA_solve dnlDYN dnlFE dnlLA dnlBT lapack fl)
-#INSTALL(TARGETS DynELA_solve DESTINATION ${DynELA_base}/bin)
+# ADD_EXECUTABLE(DynELA_solve ${SRCS})
+# TARGET_LINK_LIBRARIES(DynELA_solve dnlFE dnlLA dnlBT lapack )
+# #INSTALL(TARGETS DynELA_solve DESTINATION ${DynELA_base}/bin)
+
+
+ADD_EXECUTABLE(test element_2d.cpp)
+# TARGET_LINK_LIBRARIES(test dnlDYN dnlFE dnlLA dnlBT lapack fl)
+TARGET_LINK_LIBRARIES(test dnlFE dnlLA dnlBT lapack lsdyna)

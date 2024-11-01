@@ -26,7 +26,7 @@
 
 #include <Const.h>
 #include <Boolean.h>
-#include <String.h>
+#include "String_.h"
 #include <Error.h>
 
 /*!

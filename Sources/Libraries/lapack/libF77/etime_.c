@@ -5,6 +5,8 @@
 #define USE_CLOCK
 #endif
 
+#define USE_CLOCK
+
 #ifndef USE_CLOCK
 #define _INCLUDE_POSIX_SOURCE	/* for HP-UX */
 #define _INCLUDE_XOPEN_SOURCE	/* for HP-UX */
