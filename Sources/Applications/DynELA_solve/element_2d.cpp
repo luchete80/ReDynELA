@@ -27,41 +27,52 @@ String parsedFileName;
 
 int main() {
 
-    Structure model;
+    //Structure model;
+    
+  Domain *model = new Domain();
+  Global_Structure = new Structure();
+  
+  model->createNode(1, 0.,0.,0.);
+  model->createNode(2, .1,0.,0.);
+  model->createNode(3, 0.,.1,0.);
+  model->createNode(4, .1,.1,0.);
 
-  model.createNode(1, 0.,0.,0.);
-  model.createNode(2, .1,0.,0.);
-  model.createNode(3, 0.,.1,0.);
-  model.createNode(4, .1,.1,0.);
-  model.createNode(5, 0.,0.,.1);
-  model.createNode(6, .1,0.,.1);
-  model.createNode(7, 0.,.1,.1);
-  model.createNode(8, .1,.1,.1);
 
-  Element* el = new ElHex8n3D;
-  model.setDefaultElement(el);
-  model.createElement(1, 1, 2, 4, 3, 5, 6, 8, 7);
 
+  Element* el = new ElQua4nAx;
+  Indice *ind = new Indice[4];
+  ind[0]=1;ind[1]=2;ind[2]=4;ind[3]=3;
+
+
+  model->createElement(el,ind);
+
+  Global_Structure->setDefaultElement(el);
+  //Global_Structure->createElement(1, 1, 2, 4, 3);
+  
 
   // ElementSet allES("ES_All");
   // model.add(&allES,1,1);
 
   ElementSet allES();
   
-  lsdynaReader("sphere-plate.k");
+  //lsdynaReader("sphere-plate.k");
   // model.add(&allES,1,1);
 
+  //ASSIGN DOMAIN TO STRUCTURE
+ //BEFORE NODESET CREATION!
+ //Global_Structure->domains.add(model);
+ //Global_Structure->setDomain(model);
+ Global_Structure->domains(0)=model;
   NodeSet topNS;
 
-  topNS.add(5);
-  topNS.add(6);
-  topNS.add(7);
-  topNS.add(8);
+  topNS.add(3);
+  topNS.add(4);
   
+  Interface int_body(1);
 	// omp_set_num_threads(1);
 	
-  NodeSet bottomNS;   
-  bottomNS.add(1,4,1);
+  //NodeSet bottomNS;   
+  //bottomNS.add(1,2,1);
   // NodeSet bottomNSy("NS_Bottomy"); model.add(&bottomNS, 2);
   // NodeSet bottomNSx("NS_Bottomx"); model.add(&bottomNS, 3);
   // NodeSet bottomNSz("NS_Bottomz"); model.add(&bottomNS, 4);
@@ -69,6 +80,8 @@ int main() {
   // ElasticLaw *hardLaw = new ElasticLaw;
  
   Material steel;
+  
+  el->attachMaterial(&steel); //OTHERWISE CRASHES
   // steel.setHardeningLaw(hardLaw);
   // steel.youngModulus = young;
   // steel.poissonRatio = poisson;
@@ -112,8 +125,33 @@ int main() {
 
 
   // model.solve();
+  
+  
+  
+  //pdomain->add(el); //THIS CRASHES
+  //pdomain->typeOfPreprocessing=preprocessingSingle;
 
+  // initialisation des donnees aux noeuds
+  //model->initSolve();
+  
+  Global_Structure->domains.add(model);
+  cout << "Domain size "<< Global_Structure->domains.size();
+  //Global_Structure->setDomain(model);
+  
+  ExplicitSolver *solver = new ExplicitSolver();
+  Global_Structure->addSolver(solver);
+  Global_Structure->logFile = new LogFile("log.txt");
+  
+  model->solvers.add(solver);
+  
+  model->initSolve();
+  
+  //Global_Structure->initSolve();
+  
+  //Global_Structure->solve();
   
   return 0;
+  
+  
   
 }

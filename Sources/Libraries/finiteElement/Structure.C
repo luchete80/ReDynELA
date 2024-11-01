@@ -322,15 +322,17 @@ Boolean Structure::initSolve()
   // log file
   (*Global_Structure->logFile) << elements.size() << " elements\n"
                                << nodes.size() << " nodes\n";
-
+  
   // initialisation du temps
   currentTime = 0;
   // initialisation des domaines
   for (i = 0; i < domains.size(); i++)
   {
+    cout << "Domain "<<i<<endl;
     (*Global_Structure->logFile) << "\nVerification of domain " << i << " ...\n";
     if (domains(i)->initSolve() == False)
     {
+      cout << "Domain init fail"<<endl;
       // domain has to be deleted
       (*Global_Structure->logFile) << "Void Domain " << i << " has been deleted ...\n";
       delete domains(i);

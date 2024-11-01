@@ -1060,7 +1060,7 @@ Boolean Domain::initSolve()
       fatalError("Grid topology verification\n",
                  "Mixed Topology found in element %d \n", i);
     }
-
+  cout << "DONE"<<endl;
   // log file
   (*Global_Structure->logFile) << "Grid topology : " << (elements(0)->getFamily() == Element::Bidimensional ? "2D" : elements(0)->getFamily() == Element::Axisymetric ? "2D Axi" : "3D") << "\n";
 
