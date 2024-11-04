@@ -234,7 +234,8 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Temperatures");
 #endif
-            computeTemperatures();
+
+            //computeTemperatures();
 #ifdef computeTimes
             //recordTimes.stop("Temperatures");
 #endif
@@ -243,6 +244,7 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Interfaces");
 #endif
+
             scanInterfaces();
 #ifdef computeTimes
             //recordTimes.stop("Interfaces");
@@ -256,6 +258,7 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("Contact forces");
 #endif
+
 
             // update du time
             updateTime();
