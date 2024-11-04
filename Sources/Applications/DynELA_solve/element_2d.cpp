@@ -202,13 +202,31 @@ steel.setHardening(&hard);
   // model.add(&solver);
   // model.setSaveTimes(0, stopTime, stopTime / nbreSaves);
 
-    /*
+/*    
     NodeSet axis;
-    axis.add(1,nbNodes,elem_x+1);
+    axis.add(1,nbNodes,11);
     BoundaryRestrain axisDisp;
     axisDisp.set(1, 0, 1);
     Global_Structure->attachConstantBC(&axisDisp,&axis);
 */
+
+    NodeSet base;
+    base.add(1,10+1);
+
+    BoundaryRestrain baseDisp;
+    baseDisp.set(0, 1, 0);
+    Global_Structure->attachConstantBC(&baseDisp,&base);
+
+
+    NodeSet top;
+    //start, end, inc (def 1)
+    top.add(100,120);
+    //Global_Structure->attachConstantBC(&baseDisp,&top);
+
+    BoundarySpeed topSpeed;
+    topSpeed.set(0.0000000E+00, -1.0, 0.0000000E+00);
+    Global_Structure->attachConstantBC(&topSpeed,&top);
+
   // HistoryFile vonMisesHist("vonMisesHistory");
 
   // vonMisesHist.setFileName("vonMises.plot");

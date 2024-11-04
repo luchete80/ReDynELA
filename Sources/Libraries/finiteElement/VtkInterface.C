@@ -187,16 +187,29 @@ void VtkInterface::dataWrite()
 
 
   _stream << "SCALARS " << "rho" << " float\n";
+  _stream << "LOOKUP_TABLE default\n";
   for (long j = 0; j < nbNodes; j++)
     //_stream << //dynelaData->model.nodes(j)->fieldScalar(field) << "\n";
     _stream << pstructure->getNode(j)->New->ro << "\n";
 
   _stream << "VECTORS " << "disp" << " float\n";
+  
   for (long j = 0; j < nbNodes; j++)
     //_stream << //dynelaData->model.nodes(j)->fieldScalar(field) << "\n";
     _stream << pstructure->getNode(j)->New->disp(0) << " "<<
                pstructure->getNode(j)->New->disp(1) << " "<< 
                pstructure->getNode(j)->New->disp(2) << "\n";
+
+  _stream << "SCALARS " << "EqStress" << " float\n";
+  _stream << "LOOKUP_TABLE default\n";
+  for (long j = 0; j < nbNodes; j++)
+    _stream << fixed << pstructure->getNode(j)->getNodalValue("stress", 0)<<"\n";
+    
+
+  _stream << "SCALARS " << "EqPlStrain" << " float\n";
+  _stream << "LOOKUP_TABLE default\n";
+  for (long j = 0; j < nbNodes; j++)
+    _stream << fixed << pstructure->getNode(j)->getNodalValue("plasticStrain", 0)<<"\n";
             
 /*
   for (int i = 0; i < _outputFields.size(); i++)
