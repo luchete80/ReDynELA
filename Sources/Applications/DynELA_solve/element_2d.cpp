@@ -25,6 +25,9 @@
 
 #include <omp.h>
 
+
+#include <VtkInterface.h>
+
 String parsedFileName;
 
 int main() {
@@ -35,7 +38,7 @@ int main() {
   Global_Structure = new Structure();
 
 
-  
+  /*
   model->createNode(1, 0.,0.,0.);
   model->createNode(2, .1,0.,0.);
   model->createNode(3, 0.,.1,0.);
@@ -46,7 +49,7 @@ int main() {
   model->createNode(6, 1.5,1.,0.);
   model->createNode(7, 0.5,2.,0.);
   model->createNode(8, 1.5,2.,0.);
-
+*/
 
 
   
@@ -65,14 +68,14 @@ int main() {
   };
   nbNodes--;
   */
-/*
+
   Element* el2 = new ElQua4nAx(2);
   Indice *ind = new Indice[4];
   ind[0]=1;ind[1]=2;ind[2]=4;ind[3]=3;
 
   Indice *ind2 = new Indice[4];
   ind2[0]=5;ind2[1]=6;ind2[2]=8;ind2[3]=7;  
-*/
+
   //model->add(el);
   //model->add(el2);
   
@@ -251,23 +254,33 @@ steel.setHardening(&hard);
  omp_set_num_threads(4);
  cout << "THREADS "<<omp_get_max_threads<<endl;
  
-Real stopTime=80.0e-6;
+  //Real stopTime=80.0e-6;
+  Real stopTime=80.0e-6;
 
   Global_Structure->resultFile=new io_Data;
   Global_Structure->resultFile->name = "test";
   Global_Structure->resultFile->pstructure = Global_Structure;
   Global_Structure->resultFile->setMode(Write);
+  
 
 
-  Global_Structure->setSaveTimes(0,stopTime,stopTime/1.0);
+
+  Global_Structure->setSaveTimes(0,stopTime,stopTime/1.);
 
   //Global_Structure->setResultFile("results.bin");
     
   Global_Structure->initSolve();
 
+  Global_Structure->vtk = new VtkInterface ("out.vtk");
+  Global_Structure->vtk->pstructure = Global_Structure;
+  
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
   Global_Structure->solve();
+
+
   
+  //vtk.write();
+    
   return 0;
   
   

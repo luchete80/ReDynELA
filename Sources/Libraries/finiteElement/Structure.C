@@ -794,7 +794,13 @@ void Structure::saveResults()
     // transfer the datas
     //cout <<"TRANSFERING"<<endl;
     resultFile->transfert();
-
+    
+    //NEW
+    vtk->openFile("test" +  to_string(currentTime) + ".vtk");
+    cout <<"WRITING"<<endl;
+    vtk->write();
+    vtk->close();
+    
     // increment saveTimes
     previousSaveTime = currentTime;
     nextSaveTime += saveTime;
@@ -952,6 +958,8 @@ void Structure::writeData(ofstream &pfile)
     domains(i)->writeData(pfile);
     checkBinaryVersionWrite(pfile, 1);
   }
+  vtk->write();
+  cout << "WRITING "<<endl;
 }
 
 //-----------------------------------------------------------------------------

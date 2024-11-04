@@ -53,11 +53,11 @@ public:
 #endif
 
   int getNumberOfFields();
-  short existField(short);
+  //short existField(short);
   void addField(short);
   void close();
   void openFile(String);
-  void initFields();
+  //void initFields();
   void removeField(short);
   void write();
   

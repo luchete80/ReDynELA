@@ -17,6 +17,7 @@
 //#include <Model.h>
 
 #include <Structure.h> 
+#include <NodalField.h>
 
 //-----------------------------------------------------------------------------
 VtkInterface::VtkInterface(char *newName)
@@ -24,7 +25,7 @@ VtkInterface::VtkInterface(char *newName)
 {
   if (newName != NULL)
     name = newName;
-  initFields();
+  //initFields();
 }
 
 //-----------------------------------------------------------------------------
@@ -77,12 +78,12 @@ void VtkInterface::headerWrite()
   
   ////dynelaData->settings->getValue("DynELA", _name);
   ////dynelaData->settings->getValue("Version", _version);
-
+  cout << "TEST"<<endl;
   _stream << "# vtk DataFile Version 4.0\n";
   _stream << _name + " v." + _version + "\n";
   _stream << "ASCII\n";
   _stream << "DATASET UNSTRUCTURED_GRID\n";
-
+  cout << "TEST"<<endl;
   // Write the current time
   _stream << "FIELD FieldData 1\n";
   _stream << "TIME 1 1 double\n";
@@ -130,7 +131,8 @@ void VtkInterface::elementsWrite()
   Element *pElement;
 
   for (long i = 0; i < nbElements; i++)
-    totNodes += //dynelaData->model.elements(i)->nodes.size();
+    //totNodes += //dynelaData->model.elements(i)->nodes.size();
+    totNodes +=pstructure->getElement(i)->getNumberOfNodes();
   totNodes += nbElements;
 
   _stream << "CELLS " << nbElements << " " << totNodes << "\n";
@@ -143,7 +145,7 @@ void VtkInterface::elementsWrite()
     _stream << nbNodes << " ";
     for (int j = 0; j < nbNodes; j++)
       //_stream << pElement->nodes(j)->internalNumber() << " ";
-      _stream << pElement->nodes(j)->
+      _stream << pElement->nodes(j)->Id << " ";
     _stream << "\n";
   }
 
@@ -152,31 +154,51 @@ void VtkInterface::elementsWrite()
   _stream << "CELL_TYPES " << nbElements << "\n";
   for (long i = 0; i < nbElements; i++)
     //_stream << //dynelaData->model.elements(i)->getVtkType() << "\n";
+    _stream << "9" << "\n";
 
   _stream << "\n";
 }
-/*
+
 //-----------------------------------------------------------------------------
 void VtkInterface::nodesNumbersWrite()
 //-----------------------------------------------------------------------------
 {
-  long nbNodes = //dynelaData->model.nodes.size();
+  //long nbNodes = //dynelaData->model.nodes.size();
+  long nbNodes = pstructure->getNodesNumber();
   _stream << "SCALARS nodesNumbers" << nbNodes << " float\n";
 
   _stream << "\n";
 }
 
+
+
 //-----------------------------------------------------------------------------
 void VtkInterface::dataWrite()
 //-----------------------------------------------------------------------------
 {
-  long nbNodes = //dynelaData->model.nodes.size();
+
+  //long nbNodes = //dynelaData->model.nodes.size();
+  long nbNodes = pstructure->getNodesNumber();
   short field;
-  Field fields;
+  //Field fields;
   bool lookupWriten = false;
 
   _stream << "POINT_DATA " << nbNodes << "\n";
 
+
+  _stream << "SCALARS " << "rho" << " float\n";
+  for (long j = 0; j < nbNodes; j++)
+    //_stream << //dynelaData->model.nodes(j)->fieldScalar(field) << "\n";
+    _stream << pstructure->getNode(j)->New->ro << "\n";
+
+  _stream << "VECTORS " << "disp" << " float\n";
+  for (long j = 0; j < nbNodes; j++)
+    //_stream << //dynelaData->model.nodes(j)->fieldScalar(field) << "\n";
+    _stream << pstructure->getNode(j)->New->disp(0) << " "<<
+               pstructure->getNode(j)->New->disp(1) << " "<< 
+               pstructure->getNode(j)->New->disp(2) << "\n";
+            
+/*
   for (int i = 0; i < _outputFields.size(); i++)
   {
     field = _outputFields(i);
@@ -220,17 +242,23 @@ void VtkInterface::dataWrite()
                 << t(2, 0) << " " << t(2, 1) << " " << t(2, 2) << "\n";
       }
     }
-  }
+  }//output field
+  
+  */
   _stream << "\n";
+
+  
+
 }
 
 //-----------------------------------------------------------------------------
 void VtkInterface::write()
 //-----------------------------------------------------------------------------
 {
+  cout << "Header write"<<endl;
   // Header write
   headerWrite();
-
+  cout << "Node write"<<endl;
   // Write the nodes
   nodesWrite();
 
@@ -241,6 +269,7 @@ void VtkInterface::write()
   dataWrite();
 }
 
+/*
 //-----------------------------------------------------------------------------
 void VtkInterface::initFields()
 //-----------------------------------------------------------------------------
@@ -285,11 +314,13 @@ void VtkInterface::addField(short field)
 void VtkInterface::removeField(short field)
 //-----------------------------------------------------------------------------
 {
+    /*
   short ind = existField(field);
   if (ind != -1)
   {
     _outputFields.del(ind);
   }
+  */
 }
 
 //-----------------------------------------------------------------------------

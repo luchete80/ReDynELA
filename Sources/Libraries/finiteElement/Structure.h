@@ -27,6 +27,8 @@
 #include <upFemSolver.h>
 #include <Timer.h>
 
+#include <VtkInterface.h> //new
+
 class Structure;
 extern Structure *Global_Structure;
 class ElementSet;
@@ -80,6 +82,8 @@ public:
   Real nextSaveTime;
   Real previousSaveTime;
   Timers cpuTimes; //!< Store the CPU Times
+  
+  VtkInterface *vtk; //new
 
 private:
   /** @dia:route 20,26;h,123.065,81.1794,114.75,9.5794,119.065 */
