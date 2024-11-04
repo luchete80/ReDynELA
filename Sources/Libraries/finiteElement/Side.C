@@ -79,7 +79,7 @@ void Side::computeSideFacesNormals()
 //-----------------------------------------------------------------------------
 {
   Indice i;
-
+  //cout << "SIDE NODES "<<nodes.size()<<endl;
   // reinit a zero des normales des vertex
   for (i = 0; i < nodes.size(); i++)
     nodes(i)->normal = 0.;
@@ -112,8 +112,10 @@ void Side::Init()
   {
     // the first node
     pnd = nodes(i);
+    cout << "Node ELement "<<pnd->elements.size()<<endl;
     for (j = 0; j < pnd->elements.size(); j++)
     {
+      cout << "Element node size "<<pnd->elements.size()<<endl;
       pel = pnd->elements(j);
 
       // si mod�le plan
@@ -171,6 +173,7 @@ void Side::Init()
       }
     }
   }
+  cout << "Side sideface count: "<<sides.size()<<", node count "<<nodes.size()<<endl;
 
   lel.flush();
 }

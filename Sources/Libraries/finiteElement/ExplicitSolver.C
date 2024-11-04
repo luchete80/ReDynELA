@@ -647,7 +647,7 @@ void ExplicitSolver::computeMass()
       {
             pnd = domain->nodes(i);
             pnd->New->dro = roInc(i);
-            cout << "M(glob)"  <<i<<", "<< M(i)<<", F: "<<F(i)<<endl;
+            //cout << "M(glob)"  <<i<<", "<< M(i)<<", F: "<<F(i)<<endl;
       }
 }
 

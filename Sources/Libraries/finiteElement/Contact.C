@@ -111,7 +111,7 @@ void Contact::computeForces(Real timeStep)
   Real fn;
   Vec3D force;
   double delta;
-
+  //cout << "PSIDE ELEMENT SIZE"<<pside->element->size()<<endl;
   if (pside->element->isNodeinElement(node) == True)
     delta = pside->computeDistanceWithPoint(node->coords);
   else
@@ -119,7 +119,7 @@ void Contact::computeForces(Real timeStep)
 
   if (delta < 0.0)
   {
-
+    cout << "CONTACT FOUND-----------------------------------"<<endl;
     // cout << delta << endl;
     //  if (node->New->fe.dot(pside->normal)<0.) {
     //    cout << "release of node "<<node->number<<endl;
@@ -150,8 +150,8 @@ void Contact::computeForces(Real timeStep)
 
   computetangentialForce(fn, Ft);
 
-  //  cout << fn*pside->normal<<endl;
-  //  cout << Ft<<endl;
+  cout << fn*pside->normal<<endl;
+  cout << Ft<<endl;
 
   force = fn * pside->normal + Ft;
   //  cout << force << endl;
