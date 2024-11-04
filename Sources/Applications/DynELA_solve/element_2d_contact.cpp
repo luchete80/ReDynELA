@@ -121,7 +121,8 @@ int main() {
   cout << "Nodes created: "<<Global_Structure->getNodesNumber()<<endl;
 
   
-  
+
+  Global_Structure->setDefaultElement(el);  
   int nbNodes=Global_Structure->getNodesNumber()+1;
   int nn = nbNodes;
   Real i;
@@ -130,7 +131,7 @@ int main() {
     for (i=0;i<=10;i+=1) {
       cout <<"x "<<i*0.1+0.5<<endl;
       cout << "y "<<j*0.1+1.0<<endl;
-      Global_Structure->createNode(nbNodes,i*0.1+0.5,j*0.10+1.00001,0);
+      Global_Structure->createNode(nbNodes,i*0.1,j*0.10+1.00001,0);
       //cylinderNds.add(nbNodes);
       nbNodes++;
   };
@@ -209,7 +210,7 @@ int main() {
   int_body.setMaster(&masterside);
   int_body.setSlave(&slaveside);
   //////////////// CONTACT
-  Global_Structure->addInterface(&int_body);
+  //Global_Structure->addInterface(&int_body);
   
  
   Material steel;
@@ -275,7 +276,7 @@ steel.setConductivity(4.6000000E+01);
     
     
     NodeSet top;
-    top.add(122,143);
+    top.add(132,143);
 
 
     BoundarySpeed topSpeed;
@@ -292,9 +293,10 @@ steel.setConductivity(4.6000000E+01);
   //cout << "Domain size "<< Global_Structure->domains.size();
   //Global_Structure->setDomain(model);
   
-  ExplicitSolverCH *solver = new ExplicitSolverCH();
+  //ExplicitSolverCH *solver = new ExplicitSolverCH();
+  
 
-  //ExplicitSolver *solver = new ExplicitSolverCH();
+  ExplicitSolver *solver = new ExplicitSolver();
   
   solver->setTimes(0.0,1.0e-1);
   solver->setTimeStepMethod("Courant");
@@ -323,7 +325,7 @@ steel.setConductivity(4.6000000E+01);
 
 
 
-  Global_Structure->setSaveTimes(0,stopTime,stopTime/1.);
+  Global_Structure->setSaveTimes(0,stopTime,stopTime);
 
   //Global_Structure->setResultFile("results.bin");
     

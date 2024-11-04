@@ -618,7 +618,8 @@ void ExplicitSolver::computeMass()
             // integration de la conservation de la masse
             // sur l'element courant
             pel->computeMassEquation(Me, Fe);
-
+            
+            //cout << "Elem "<<el <<", mass "<<Me(el)<<endl;
             // assemblage de la matrice de masse
             // et du vecteur
             for (i = 0; i < nonodes; i++)
@@ -633,8 +634,12 @@ void ExplicitSolver::computeMass()
                   F(glob) += Fe(i);
             }
       }
-
-      // resolution du systeme M x q = F
+      
+      for (i = 0; i < domain->nodes.size(); i++)
+        if (M(i)<1.0e-4)
+          M(i) = 1.e-4;
+        
+    // resolution du systeme M x q = F
       roInc = M.Solve(F);
 
       // update du champ de densites
@@ -642,6 +647,7 @@ void ExplicitSolver::computeMass()
       {
             pnd = domain->nodes(i);
             pnd->New->dro = roInc(i);
+            cout << "M(glob)"  <<i<<", "<< M(i)<<", F: "<<F(i)<<endl;
       }
 }
 
@@ -783,7 +789,7 @@ void ExplicitSolver::computeMomentum()
             for (j = 0; j < domain->NoDim(); j++)
                   pnd->New->dmat_speed(j) = vInc(i * domain->NoDim() + j);
 
-            //   cout << pnd->New->dmat_speed << endl;
+            //cout << "speed "<<pnd->New->dmat_speed << endl;
             // mise a jour des vitesses
             //    pnd->New->mat_speed=pnd->Current->mat_speed+(times.timeStep*pnd->New->dmat_speed);
       }

@@ -156,7 +156,8 @@ void Jobs::mapInitial(List<Element *> lel)
 
   for (i = 0; i < nb; i++)
   {
-    procs((i + 1) / nppr <= np - 1 ? (i + 1) / nppr : np - 1)->elementsList << lelLoc(i);
+   procs((i + 1) / nppr <= np - 1 ? (i + 1) / nppr : np - 1)->elementsList << lelLoc(i);
+   //procs(0)->elementsList<<lelLoc(i);
   }
 
   init = True;
