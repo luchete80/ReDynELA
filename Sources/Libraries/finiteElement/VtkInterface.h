@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 
+class Structure;
 //-----------------------------------------------------------------------------
 // Class : VtkInterface
 //
@@ -59,6 +60,10 @@ public:
   void initFields();
   void removeField(short);
   void write();
+  
+  //Like in io_Structure
+  Structure *pstructure; // pointeur sur la structure
+
 };
 
 #endif

@@ -16,7 +16,7 @@
 //#include <Field.h>
 //#include <Model.h>
 
-/*
+#include <Structure.h> 
 
 //-----------------------------------------------------------------------------
 VtkInterface::VtkInterface(char *newName)
@@ -86,13 +86,16 @@ void VtkInterface::headerWrite()
   // Write the current time
   _stream << "FIELD FieldData 1\n";
   _stream << "TIME 1 1 double\n";
-  _stream << //dynelaData->model.currentTime << "\n";
+
+  //_stream << dynelaData->model.currentTime << "\n";
+  _stream << pstructure->getCurrentTime()<<"\n";
 }
+
 
 //-----------------------------------------------------------------------------
 void VtkInterface::nodesWrite()
 //-----------------------------------------------------------------------------
-{
+{/*
   long nbNodes = //dynelaData->model.nodes.size();
   _stream << "POINTS " << nbNodes << " float\n";
 
@@ -101,14 +104,27 @@ void VtkInterface::nodesWrite()
             << " " << //dynelaData->model.nodes(i)->coords(1) << " "
             << //dynelaData->model.nodes(i)->coords(2) << "\n";
 
+  _stream << "\n";*/
+
+  long nbNodes = pstructure->getNodesNumber();
+  _stream << "POINTS " << nbNodes << " float\n";
+
+  for (long i = 0; i < nbNodes; i++)
+    _stream << pstructure->getNode(i)->coords(0)
+            << " " << pstructure->getNode(i)->coords(1) << " "
+            <<pstructure->getNode(i)->coords(2) << "\n";
+
   _stream << "\n";
+  
+
 }
 
 //-----------------------------------------------------------------------------
 void VtkInterface::elementsWrite()
 //-----------------------------------------------------------------------------
 {
-  long nbElements = //dynelaData->model.elements.size();
+  //long nbElements = //dynelaData->model.elements.size();
+  long nbElements = pstructure->getElementsNumber();
   long totNodes = 0;
   long nbNodes;
   Element *pElement;
@@ -121,11 +137,13 @@ void VtkInterface::elementsWrite()
 
   for (long i = 0; i < nbElements; i++)
   {
-    pElement = //dynelaData->model.elements(i);
+    //pElement = //dynelaData->model.elements(i);
+    pElement = pstructure->getElement(i);
     nbNodes = pElement->nodes.size();
     _stream << nbNodes << " ";
     for (int j = 0; j < nbNodes; j++)
-      _stream << pElement->nodes(j)->internalNumber() << " ";
+      //_stream << pElement->nodes(j)->internalNumber() << " ";
+      _stream << pElement->nodes(j)->
     _stream << "\n";
   }
 
@@ -133,11 +151,11 @@ void VtkInterface::elementsWrite()
 
   _stream << "CELL_TYPES " << nbElements << "\n";
   for (long i = 0; i < nbElements; i++)
-    _stream << //dynelaData->model.elements(i)->getVtkType() << "\n";
+    //_stream << //dynelaData->model.elements(i)->getVtkType() << "\n";
 
   _stream << "\n";
 }
-
+/*
 //-----------------------------------------------------------------------------
 void VtkInterface::nodesNumbersWrite()
 //-----------------------------------------------------------------------------
@@ -262,6 +280,7 @@ void VtkInterface::addField(short field)
     _outputFields << field;
 }
 
+*/
 //-----------------------------------------------------------------------------
 void VtkInterface::removeField(short field)
 //-----------------------------------------------------------------------------
@@ -280,4 +299,4 @@ int VtkInterface::getNumberOfFields()
   return _outputFields.size();
 }
 
-*/
+
