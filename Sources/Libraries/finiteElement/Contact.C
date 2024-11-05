@@ -148,7 +148,7 @@ void Contact::computeForces(Real timeStep)
   //  Fn=(node->mass*delta/SQ(timeStep))*pside->normal;
   fn = 2. * node->mass * delta / SQ(timeStep);
 
-  //computetangentialForce(fn, Ft);
+  computetangentialForce(fn, Ft);
 
   cout << fn*pside->normal<<endl;
   cout << Ft<<endl;
