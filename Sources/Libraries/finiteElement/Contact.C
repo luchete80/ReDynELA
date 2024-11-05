@@ -119,7 +119,7 @@ void Contact::computeForces(Real timeStep)
 
   if (delta < 0.0)
   {
-    cout << "CONTACT FOUND-----------------------------------"<<endl;
+    //cout << "CONTACT FOUND-----------------------------------"<<endl;
     // cout << delta << endl;
     //  if (node->New->fe.dot(pside->normal)<0.) {
     //    cout << "release of node "<<node->number<<endl;
@@ -148,7 +148,7 @@ void Contact::computeForces(Real timeStep)
   //  Fn=(node->mass*delta/SQ(timeStep))*pside->normal;
   fn = 2. * node->mass * delta / SQ(timeStep);
 
-  computetangentialForce(fn, Ft);
+  //computetangentialForce(fn, Ft);
 
   cout << fn*pside->normal<<endl;
   cout << Ft<<endl;

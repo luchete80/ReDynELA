@@ -797,7 +797,7 @@ void Structure::saveResults()
     
     //NEW
     vtk->openFile("test" +  to_string(currentTime) + ".vtk");
-    cout <<"WRITING"<<endl;
+    //cout <<"WRITING"<<endl;
     vtk->write();
     vtk->close();
     
@@ -959,7 +959,7 @@ void Structure::writeData(ofstream &pfile)
     checkBinaryVersionWrite(pfile, 1);
   }
   vtk->write();
-  cout << "WRITING "<<endl;
+  //cout << "WRITING "<<endl;
 }
 
 //-----------------------------------------------------------------------------

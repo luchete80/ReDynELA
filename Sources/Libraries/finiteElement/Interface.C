@@ -113,7 +113,9 @@ void Interface::ScanIncludeNodes()
   slave->computeScanVolume();
 
   // calcul des normales
+  cout << "SIDEFACE Normals MASTER"<<endl;
   master->computeSideFacesNormals();
+  cout << "SIDEFACE Normals SLAVE"<<endl;
   slave->computeSideFacesNormals();
 
   // scan des inclusions

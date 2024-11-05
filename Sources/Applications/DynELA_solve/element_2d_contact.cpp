@@ -119,24 +119,48 @@ int main() {
 
   cout << "Elements created: "<<Global_Structure->getElementsNumber()<<endl;
   cout << "Nodes created: "<<Global_Structure->getNodesNumber()<<endl;
+  cout << "ADDING NODE ELEMENTS (NEEDED FOR CONTACT)"<<endl;
 
-  
-
-  Global_Structure->setDefaultElement(el);  
-  int nbNodes=Global_Structure->getNodesNumber()+1;
-  int nn = nbNodes;
   Real i;
   Real j;
+    
+  j = 10;
+  
+  for (int i=0;i<=10;i++) {
+    cout << "i j "<<i<<", "<<j<<endl;
+    int nind = 11*j+i;
+    int eind = 9*j+i;
+    cout << "node ind , el ind "<<nind<<","<<eind<<endl;
+    //if (i>0) Global_Structure->getNode(i)->elements<<Global_Structure->getElement(j*10+i);
+    if (i<10) Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind);
+    if (i>0)  Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind-1);
+    
+    cout << "Node "<< 10*j+i << "element size"<<Global_Structure->getNode(nind)->elements.size()<<endl;
+  }
+  cout << "FIRST ELEMENT INDEX AFTER FIRST BOX "<<Global_Structure->getElementsNumber()+1<<endl; 
+          
+  cout << "Done "<<endl;
+
+  int nbNodes=Global_Structure->getNodesNumber()+1;
+  int nel = Global_Structure->getElementsNumber();
+
+  int nn = nbNodes; //BEFORE CREATION
+  
+  cout << "Node count before top mesh "<<nbNodes<<endl;
   for (j=0;j<=1;j+=1) 
     for (i=0;i<=10;i+=1) {
-      cout <<"x "<<i*0.1+0.5<<endl;
-      cout << "y "<<j*0.1+1.0<<endl;
-      Global_Structure->createNode(nbNodes,i*0.1,j*0.10+1.00001,0);
+      //cout <<"x "<<i*0.1+0.5<<endl;
+      //cout << "y "<<j*0.1+1.0<<endl;
+      Global_Structure->createNode(nbNodes,i*0.125,j*0.10+1.00001,0);
       //cylinderNds.add(nbNodes);
       nbNodes++;
   };
-  //nbNodes--;
 
+
+  
+  //nbNodes--;
+  nn--;
+  
   cout << "Nodes created: "<<Global_Structure->getElementsNumber()<<endl;
   
   cout << "Connectivity"<<endl;
@@ -149,17 +173,32 @@ int main() {
   Indice x4;
 
   for (Indice j = 0; j < 1; j++){
-    for (Indice i = 0; i < 9; i++)
+    for (Indice i = 0; i < 10; i++)
     {
+      Global_Structure->setDefaultElement(el);  
       cout << "i "<<i<<endl;
       x1 = nn+(i + (j * (nx + 1)) + 1);
       x2 = nn+(i + (j * (nx + 1)) + 2);
       x3 = nn+(i + ((j + 1) * (nx + 1)) + 2);
       x4 = nn+(i + ((j + 1) * (nx + 1)) + 1);
+      cout << "x1--x4 "<<x1 <<","<<x2 <<","<<x3 <<","<<x4 <<endl;
       Global_Structure->createElement(nbElements, x1, x2, x3, x4);
       nbElements++;
     }
   }      
+
+  j = 10;
+  for (int i=0;i<=10;i++) {
+    
+    int nind = nn + i;
+    int eind = nel+ i;
+
+    cout << "CREATING NODE ELEMENTS FOR MASTER "<<endl;
+    cout << "node ind , el ind "<<nind<<","<<eind<<endl;
+    if (i<10) Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind);
+    //if (i>0)  Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind-1);
+  }
+  
     
   //bm2.rectangle (1.0,0.1,10,1);  
   
@@ -178,7 +217,7 @@ int main() {
             <<Global_Structure->getNode(i)->coords(2) << "\n";
 
 
-
+   cout << "OVERALL ELEMENT NUMBER" << Global_Structure->getElementsNumber()<<endl;
 
   Interface int_body(1);
   
@@ -193,34 +232,42 @@ int main() {
   //elside.addSideFace(sf);
 
   NodeSet masterNS;
-  //start, end, inc (def 1)
-  masterNS.add(111,121);
-
   NodeSet slaveNS;
-  slaveNS.add(122,132);
+  //start, end, inc (def 1)
+  slaveNS.add(111,121);
+
+
+  masterNS.add(122,132); //(TOP)
 
   masterside.addNodeSet(&masterNS);
+  cout << "MASTER NODE SIZE "<<masterside.nodes.size()<<endl;
+
   slaveside.addNodeSet(&slaveNS);
-  cout << "Init Side "<<endl;
-  masterside.Init();
-  slaveside.Init();
+
+  cout << "Init Side SLAVE "<<endl;
+
+
   CoulombLaw* cl = new CoulombLaw();
-  cl->setFriction(0.2);
+  cl->setFriction(0.0);
   int_body.contactLaw = cl;
-  int_body.setMaster(&masterside);
+  if (int_body.setMaster(&masterside) !=Success) {cout << "set master FAILS"<<endl;}
   int_body.setSlave(&slaveside);
+
+  int_body.Init();
+  Global_Structure->addInterface(&int_body);
   //////////////// CONTACT
   //Global_Structure->addInterface(&int_body);
-  
+
+  cout << "---------------------------\n Node "<< 1 << "element size"<<Global_Structure->getNode(1)->elements.size()<<endl;  
  
   Material steel;
 
-  Real A=400e6;
+  Real A=300e6;
   Real B=100e6;
   Real n=1;
   Real young=117e9;
   Real poisson= .35;
-  Real density= 8930.0;
+  Real density= 2700.0;
 
   IsoHardElastoplastic hard;
   hard.setYieldStress(A);
@@ -268,7 +315,7 @@ steel.setConductivity(4.6000000E+01);
 
     
     NodeSet axis;
-    axis.add(1,143,10);
+    axis.add(1,143,11);
     BoundaryRestrain axisDisp;
     axisDisp.set(1, 0, 0);
     Global_Structure->attachConstantBC(&axisDisp,&axis);
@@ -298,7 +345,7 @@ steel.setConductivity(4.6000000E+01);
 
   ExplicitSolver *solver = new ExplicitSolver();
   
-  solver->setTimes(0.0,1.0e-1);
+  solver->setTimes(0.0,1.0);
   solver->setTimeStepMethod("Courant");
    
   Global_Structure->addSolver(solver);
@@ -315,7 +362,7 @@ steel.setConductivity(4.6000000E+01);
  cout << "THREADS "<<omp_get_max_threads<<endl;
  
   //Real stopTime=80.0e-6;
-  Real stopTime=5.0e-5;
+  Real stopTime=1.0e-2;
 
   Global_Structure->resultFile=new io_Data;
   Global_Structure->resultFile->name = "test";
