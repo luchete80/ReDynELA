@@ -96,7 +96,7 @@ void Side::computeSideFacesNormals()
   // normalisation des normales des vertex
   for (i = 0; i < nodes.size(); i++){
     nodes(i)->normal.normalize();
-    cout << "SIDE NORMAL: "<<nodes(i)->normal<<endl;
+    //cout << "SIDE NORMAL: "<<nodes(i)->normal<<endl;
   }
 }
 

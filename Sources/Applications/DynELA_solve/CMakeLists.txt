@@ -24,9 +24,15 @@ LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
 
 ADD_EXECUTABLE(test element_2d.cpp)
-# TARGET_LINK_LIBRARIES(test dnlDYN dnlFE dnlLA dnlBT lapack fl)
 TARGET_LINK_LIBRARIES(test dnlFE dnlLA dnlBT lapack lsdyna)
 
 
 ADD_EXECUTABLE(test_contact element_2d_contact.cpp)
 TARGET_LINK_LIBRARIES(test_contact dnlFE dnlLA dnlBT lapack lsdyna)
+
+
+link_directories("${MMG_DIR}/lib")
+include_directories("${MMG_DIR}/include")
+
+ADD_EXECUTABLE(test_contact_amr element_2d_contact_amr.cpp)
+TARGET_LINK_LIBRARIES(test_contact_amr mmg dnlFE dnlLA dnlBT lapack lsdyna)
