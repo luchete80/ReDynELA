@@ -415,6 +415,14 @@ steel.setConductivity(4.6000000E+01);
 
   /** read the mesh in a mesh file */
   //MMG2D_loadMesh(mmgMesh,filename);
+  
+  //DEFINED IN 
+  //MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na);
+  int np = 1;
+  int nquad =1;
+  int nt = 1;
+  int na = 1;
+  MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na);
 
   /** Set parameters : for example set the maximal edge size to 0.1 */
   //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
