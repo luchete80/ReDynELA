@@ -1,3 +1,7 @@
+in src/common/libmmgtypes.h 
+
+line 664 (mmg 5.8.0)
+
 typedef struct {
   size_t    memMax; /*!< Maximum memory available */
   size_t    memCur; /*!< Current memory used */
@@ -74,3 +78,25 @@ index 08f62a8d..5ea0a560 100644
     ppt = &mesh->point[k];
 
 
+in API_functions_2d.c
+Line  
+
+
+
+
+
+typedef struct {
+  int       ver; /* Version of the solution file */
+  int       dim; /* Dimension of the solution file*/
+  MMG5_int  np; /* Number of points of the solution */
+  MMG5_int  npmax; /* Maximum number of points */
+  MMG5_int  npi; /* Temporary number of points (internal use only) */
+  int       size; /* Number of solutions per entity */
+  int       type; /* Type of the solution (scalar, vectorial or tensorial) */
+  int       entities; /* Type of the solution (scalar, vectorial of tensorial) */
+  double    *m; /*!< Solution values */
+  double    umin,umax; /*!<Min/max values for the solution */
+  char      *namein; /*!< Input solution file name */
+  char      *nameout; /*!< Output solution file name */
+} MMG5_Sol;
+typedef MMG5_Sol * MMG5_pSol;

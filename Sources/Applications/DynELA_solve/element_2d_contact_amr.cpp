@@ -28,6 +28,20 @@
 
 #include <VtkInterface.h>
 
+#include <iostream>
+#include <vector>
+#include <set>
+
+
+#include <iostream>
+
+#include <vector>
+#include <set>
+#include <utility>
+#include <utility>
+
+#include <map>
+
 /** Include the mmg2d library hader file */
 // if the header file is in the "include" directory
 // #include "libmmg2d.h"
@@ -35,6 +49,115 @@
 #include "mmg/mmg2d/libmmg2d.h"
 
 String parsedFileName;
+
+/* FROM INTERNAL
+ * 
+ * std::vector <std::pair<int,int>> getAllEdges(Structure *st){
+  
+      // Define the mesh as a vector of triangles, each represented by 3 vertex indices
+    std::vector<std::vector<int>> triangles = {
+        {1, 2, 3},
+        {3, 2, 4},
+        {4, 2, 5},
+        {5, 2, 1}
+    };
+
+    // Map to store edges and their counts
+    std::map<std::pair<int, int>, int> edgeCount;
+    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
+
+    // Iterate over each triangle and its edges
+    for (const auto& triangle : triangles) {
+        for (int i = 0; i < 3; ++i) {
+            int v1 = triangle[i];
+            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
+            std::pair<int, int> edge = createEdge(v1, v2);
+            edgeCount[edge]++;
+        }
+    }
+
+    // Print the exterior edges
+    std::cout << "Exterior edges:" << std::endl;
+    for (const auto& edgeEntry : edgeCount) {
+        if (edgeEntry.second == 1) { // Exterior edge appears only once
+            std::cout << "Edge between vertices " << edgeEntry.first.first
+                      << " and " << edgeEntry.first.second << std::endl;
+           extEdges.push_back(edgeEntry.first); 
+        }
+    }  
+  
+  
+}
+
+----*/
+
+// A helper function to create a sorted pair for an edge
+std::pair<int, int> createEdge(int a, int b) {
+    return (a < b) ? std::make_pair(a, b) : std::make_pair(b, a);
+}
+
+std::vector <std::pair<int,int>> getAllEdges(Structure *st){
+ 
+ 
+    // Map to store edges and their counts
+    std::map<std::pair<int, int>, int> edgeCount;
+    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
+
+   
+    int ecount = st->getElementsNumber();
+    cout << "checking on "<< ecount <<" elements"<<endl;
+    for (int e=0;e<ecount;e++){
+      Element *pel = st->getElement(e);
+      
+      for (int k = 0; k < pel->getNumberOfSideFaces(); k++){
+        //int toHave = pel->getNumberOfNodesOnSideFace(k);
+        //THIS IS LIKE IN SIDE.C
+        Node* n1 = pel->getNodeOnSideFace(k, 0); //ASUMMIN
+        Node* n2 = pel->getNodeOnSideFace(k, 1); //ASUMMIN
+
+        cout << "Elem "<< e <<" N1 "<<n1->Id<<", "<<n2->Id<<endl;
+        std::pair<int, int> edge = createEdge(n1->Id, n2->Id); //COMPARE WITH number
+        edgeCount[edge]++; //THIS INSERT ELEMENT 
+        
+        cout << "Edge count size "<<edgeCount.size()<<endl;
+        //Node * 
+        //Node *Element::getNodeOnEdge(short edge, short node)
+        
+        }
+      
+    }//Element
+    
+    /*
+      // Define the mesh as a vector of triangles, each represented by 3 vertex indices
+    std::vector<std::vector<int>> triangles = {
+        {1, 2, 3},
+        {3, 2, 4},
+        {4, 2, 5},
+        {5, 2, 1}
+    };
+
+    // Iterate over each triangle and its edges
+    for (const auto& triangle : triangles) {
+        for (int i = 0; i < 3; ++i) {
+            int v1 = triangle[i];
+            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
+            std::pair<int, int> edge = createEdge(v1, v2);
+            edgeCount[edge]++; //THIS INSERT ELEMENT 
+        }
+    }
+
+    // Print the exterior edges
+    std::cout << "Exterior edges:" << std::endl;
+    for (const auto& edgeEntry : edgeCount) {
+        if (edgeEntry.second == 1) { // Exterior edge appears only once
+            std::cout << "Edge between vertices " << edgeEntry.first.first
+                      << " and " << edgeEntry.first.second << std::endl;
+           extEdges.push_back(edgeEntry.first); 
+        }
+    }  
+  
+  */
+}
 
 int main() {
 
@@ -371,7 +494,7 @@ steel.setConductivity(4.6000000E+01);
  
   //Real stopTime=80.0e-6;
   Real stopTime=5.0e-2;
-  Real saveTime=stopTime/20.0;
+  Real saveTime=stopTime/40.0;
   solver->setTimes(0.0,stopTime);
   
   
@@ -393,7 +516,7 @@ steel.setConductivity(4.6000000E+01);
   Global_Structure->vtk->pstructure = Global_Structure;
   
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
-  Global_Structure->solve();
+  //Global_Structure->solve();
 
   
   cout << "REMESHING ..."<<endl;
@@ -416,14 +539,57 @@ steel.setConductivity(4.6000000E+01);
   /** read the mesh in a mesh file */
   //MMG2D_loadMesh(mmgMesh,filename);
   
-  //DEFINED IN 
+  //DEFINED IN :   mmg2d/API_functions_2d.c
   //MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na);
-  int np = 1;
-  int nquad =1;
-  int nt = 1;
-  int na = 1;
+  int np    = Global_Structure->getNodesNumber();
+  int nquad = Global_Structure->getElementsNumber();
+  int nt    = 0; //TRIS
+  int na    = 1; //EDGES
+  //na: Number of edges
+  
+  //In 
   MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na);
 
+  getAllEdges(Global_Structure);
+
+
+    // Define the mesh as a vector of triangles, each represented by 3 vertex indices
+    std::vector<std::vector<int>> triangles = {
+        {1, 2, 3},
+        {3, 2, 4},
+        {4, 2, 5},
+        {5, 2, 1}
+    };
+
+    // Map to store edges and their counts
+    std::map<std::pair<int, int>, int> edgeCount;
+    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
+
+    // Iterate over each triangle and its edges
+    for (const auto& triangle : triangles) {
+        for (int i = 0; i < 3; ++i) {
+            int v1 = triangle[i];
+            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
+            std::pair<int, int> edge = createEdge(v1, v2);
+            edgeCount[edge]++;
+        }
+    }
+
+    // Print the exterior edges
+    std::cout << "Exterior edges:" << std::endl;
+    for (const auto& edgeEntry : edgeCount) {
+        if (edgeEntry.second == 1) { // Exterior edge appears only once
+            std::cout << "Edge between vertices " << edgeEntry.first.first
+                      << " and " << edgeEntry.first.second << std::endl;
+           extEdges.push_back(edgeEntry.first); 
+        }
+    }  
+  
+
+  //int MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na) {
+  
+  //inout_s.c
+  
   /** Set parameters : for example set the maximal edge size to 0.1 */
   //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
 
@@ -434,6 +600,24 @@ steel.setConductivity(4.6000000E+01);
   /** Generate the mesh */
   //ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
 
+
+/*
+  // Set parameters : for example set the maximal edge size to 0.1 
+  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
+
+  // Higher verbosity level
+  MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
+
+
+  // Generate the mesh 
+  ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
+
+  if ( ier == MMG5_STRONGFAILURE ) {
+    fprintf(stdout,"BAD ENDING OF MMG2DMESH: UNABLE TO SAVE MESH\n");
+    return(ier);
+  } else if ( ier == MMG5_LOWFAILURE )
+    fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
+*/
 
   
   //vtk.write();
