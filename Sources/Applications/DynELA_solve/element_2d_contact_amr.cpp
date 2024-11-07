@@ -96,17 +96,18 @@ std::pair<int, int> createEdge(int a, int b) {
     return (a < b) ? std::make_pair(a, b) : std::make_pair(b, a);
 }
 
-std::vector <std::pair<int,int>> getAllEdges(Structure *st){
+std::vector <std::pair<int,int>> getAllEdges(Structure *st, int el_ind_max){
  
  
     // Map to store edges and their counts
     std::map<std::pair<int, int>, int> edgeCount;
     std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
 
-   
+
+    int emax = 0;   
     int ecount = st->getElementsNumber();
     cout << "checking on "<< ecount <<" elements"<<endl;
-    for (int e=0;e<ecount;e++){
+    for (int e=0;e<el_ind_max;e++){
       Element *pel = st->getElement(e);
       
       for (int k = 0; k < pel->getNumberOfSideFaces(); k++){
@@ -115,48 +116,32 @@ std::vector <std::pair<int,int>> getAllEdges(Structure *st){
         Node* n1 = pel->getNodeOnSideFace(k, 0); //ASUMMIN
         Node* n2 = pel->getNodeOnSideFace(k, 1); //ASUMMIN
 
-        cout << "Elem "<< e <<" N1 "<<n1->Id<<", "<<n2->Id<<endl;
+        //cout << "Elem "<< e <<" N1 "<<n1->Id<<", "<<n2->Id<<endl;
         std::pair<int, int> edge = createEdge(n1->Id, n2->Id); //COMPARE WITH number
+        if (edge.second > emax) emax = edge.second ;
         edgeCount[edge]++; //THIS INSERT ELEMENT 
         
-        cout << "Edge count size "<<edgeCount.size()<<endl;
+        //cout << "Edge count size "<<edgeCount.size()<<endl;
         //Node * 
         //Node *Element::getNodeOnEdge(short edge, short node)
         
         }
       
     }//Element
-    
-    /*
-      // Define the mesh as a vector of triangles, each represented by 3 vertex indices
-    std::vector<std::vector<int>> triangles = {
-        {1, 2, 3},
-        {3, 2, 4},
-        {4, 2, 5},
-        {5, 2, 1}
-    };
-
-    // Iterate over each triangle and its edges
-    for (const auto& triangle : triangles) {
-        for (int i = 0; i < 3; ++i) {
-            int v1 = triangle[i];
-            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
-            std::pair<int, int> edge = createEdge(v1, v2);
-            edgeCount[edge]++; //THIS INSERT ELEMENT 
-        }
-    }
+    cout << "DONE, max edge node index"<<emax<<endl;
 
     // Print the exterior edges
     std::cout << "Exterior edges:" << std::endl;
     for (const auto& edgeEntry : edgeCount) {
         if (edgeEntry.second == 1) { // Exterior edge appears only once
-            std::cout << "Edge between vertices " << edgeEntry.first.first
-                      << " and " << edgeEntry.first.second << std::endl;
+            //std::cout << "Edge between vertices " << edgeEntry.first.first
+              //        << " and " << edgeEntry.first.second << std::endl;
            extEdges.push_back(edgeEntry.first); 
         }
     }  
   
-  */
+  cout << "Edge sizes All:" <<edgeCount.size()<<", External: "<<extEdges.size()<<endl;
+  return extEdges;
 }
 
 int main() {
@@ -516,7 +501,7 @@ steel.setConductivity(4.6000000E+01);
   Global_Structure->vtk->pstructure = Global_Structure;
   
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
-  //Global_Structure->solve();
+  Global_Structure->solve();
 
   
   cout << "REMESHING ..."<<endl;
@@ -539,55 +524,161 @@ steel.setConductivity(4.6000000E+01);
   /** read the mesh in a mesh file */
   //MMG2D_loadMesh(mmgMesh,filename);
   
+  
+  std::vector <std::pair<int,int>> ext_edges = getAllEdges(Global_Structure, 100);
+  
   //DEFINED IN :   mmg2d/API_functions_2d.c
   //MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na);
-  int np    = Global_Structure->getNodesNumber();
+  //int np    = Global_Structure->getNodesNumber();
+  int np = 121;
   int nquad = Global_Structure->getElementsNumber();
   int nt    = 0; //TRIS
-  int na    = 1; //EDGES
+  int na    = ext_edges.size(); //EDGES
   //na: Number of edges
+ 
+ //https://github.com/tan2/DynEarthSol/blob/master/remeshing.cxx
+ 
   
-  //In 
-  MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na);
-
-  getAllEdges(Global_Structure);
-
-
-    // Define the mesh as a vector of triangles, each represented by 3 vertex indices
-    std::vector<std::vector<int>> triangles = {
-        {1, 2, 3},
-        {3, 2, 4},
-        {4, 2, 5},
-        {5, 2, 1}
-    };
-
-    // Map to store edges and their counts
-    std::map<std::pair<int, int>, int> edgeCount;
-    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
-
-    // Iterate over each triangle and its edges
-    for (const auto& triangle : triangles) {
-        for (int i = 0; i < 3; ++i) {
-            int v1 = triangle[i];
-            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
-            std::pair<int, int> edge = createEdge(v1, v2);
-            edgeCount[edge]++;
-        }
-    }
-
-    // Print the exterior edges
-    std::cout << "Exterior edges:" << std::endl;
-    for (const auto& edgeEntry : edgeCount) {
-        if (edgeEntry.second == 1) { // Exterior edge appears only once
-            std::cout << "Edge between vertices " << edgeEntry.first.first
-                      << " and " << edgeEntry.first.second << std::endl;
-           extEdges.push_back(edgeEntry.first); 
-        }
-    }  
-  
-
+  //In API_functions
   //int MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na) {
+  if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
+    cout << "ERROR ALLOCATING MESH"<<endl;
+  else 
+    cout << "MESH CREATED OK"<<endl;
+  cout << "Number of points: "<< mmgMesh->na << endl;
+  mmgMesh->edge[39].a = 1;
+  int *edges = new int[2 * na]; 
+
+  //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
+  for (int n=0;n<121;n++){
+    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n))
+      cout << "ERROR ALLOCATING NODE "<<n<<endl;
+  }
+  cout << "Vertices allocated"<<endl;
+  //int *ref = new int[na];
+  ////// MMG2D_Set_edges IS CRASHING
+  //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
+  //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
+  for (int e=0;e<na;e++)
+    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first, ext_edges[e].second, NULL, e) !=1)
+      cout << "ERROR CREATING EDGE "<<endl;
+
+  cout << "EDGES ALLOCATED "<<endl;
+
+  //int MMG2D_Set_quadrilateral(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int v3, MMG5_int ref, MMG5_int pos)
+  //int  MMG2D_Set_quadrilaterals(MMG5_pMesh mesh, MMG5_int *quadra, MMG5_int *refs) {
+  for (int e=0;e<100;e++){
+    MMG2D_Set_quadrilateral(mmgMesh, Global_Structure->getElement(e)->nodes(0)->Id
+                                   , Global_Structure->getElement(e)->nodes(1)->Id
+                                   , Global_Structure->getElement(e)->nodes(2)->Id
+                                   , Global_Structure->getElement(e)->nodes(3)->Id
+                                   , NULL, e);
   
+  
+  }
+  /** Set parameters : for example set the maximal edge size to 0.1 */
+  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
+
+  /** Higher verbosity level */
+  MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
+
+
+  /////// Generate the mesh ///////
+  int ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
+  
+  cout << "New mesh npoints "<<mmgMesh->np<<endl;
+
+  if ( ier == MMG5_STRONGFAILURE ) {
+    fprintf(stdout,"BAD ENDING OF MMG2DMESH: UNABLE TO SAVE MESH\n");
+    return(ier);
+  } else if ( ier == MMG5_LOWFAILURE )
+    fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
+
+  /*save result*/
+  //if ( MMG2D_saveMesh(mmgMesh,outname) != 1 )
+  //  exit(EXIT_FAILURE);
+
+  /*save metric*/
+  //if ( MMG2D_saveSol(mmgMesh,mmgSol,outname) != 1 )
+  //  exit(EXIT_FAILURE);
+
+
+  
+  
+  Global_Structure->delAllData();
+  
+  
+  
+  
+  Domain *dom = new Domain();
+  Global_Structure->setDomain( dom);
+  cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
+  
+  //Global_Structure->createNode(0,0,0,0);
+  
+  cout << "struct nodecount "<<Global_Structure->getNodesNumber()<<endl;
+  
+  
+  cout << "Node count" << mmgMesh->np<<endl;
+  cout <<"Mesh node 0 "<<mmgMesh->point[0].c[0]<<endl;
+  
+  for (int n=0;n<mmgMesh->np;n++)
+    Global_Structure->createNode(n, mmgMesh->point[n].c[0], mmgMesh->point[n].c[1], 0);
+
+
+  Element* el3 = new ElTri3n2D();
+  Global_Structure->setDefaultElement(el3);
+  
+  for (int tri=0;tri<mmgMesh->nt;tri++){
+    //cout << "\ntria "<<tri<<endl;
+    //cout << mmgMesh->tria[tri].v[0] <<", "<<
+    //mmgMesh->tria[tri].v[1] <<", "<<
+    //mmgMesh->tria[tri].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
+    bool error = false;
+    for (int i=0;i<3;i++){ 
+//      cout << "i "<<i<<endl;
+      if (mmgMesh->tria[tri].v[i] >= Global_Structure->getNodesNumber()){
+        cout << "ERROR on INDEX "<<endl;
+        error = true;
+      }
+    }
+    if (!error)
+    Global_Structure->createElement(tri,mmgMesh->tria[tri].v[0] ,
+                                        mmgMesh->tria[tri].v[1] , 
+                                        mmgMesh->tria[tri].v[2] );
+                                        
+  }
+  
+  VtkInterface out;
+  out.openFile("test.vtk");
+  //out.dataWrite();
+  out.pstructure = Global_Structure;  
+  out.headerWrite();
+  out.nodesWrite();
+
+  // Write the nodes
+  out.elementsWrite();
+
+  
+  out.close();
+
+/*
+  int ge = 0; //global elem
+  Global_Structure->setDefaultElement(el);
+  cout << "\nReallocating mesh" <<endl;
+  for (int q=0;q<mmgMesh->nquad;q++){
+    cout << "quad "<<q<<endl;
+    
+      Global_Structure->createElement(ge, mmgMesh->quadra[q].v[0], 
+                                                  mmgMesh->quadra[q].v[1],
+                                                  mmgMesh->quadra[q].v[2],
+                                                  mmgMesh->quadra[q].v[3]);    
+    ge++;
+  }
+*/  
+  //cout << "Struct El count "<<Global_Structure->getElementsNumber()<<endl;
+     
+        
   //inout_s.c
   
   /** Set parameters : for example set the maximal edge size to 0.1 */
@@ -619,6 +710,11 @@ steel.setConductivity(4.6000000E+01);
     fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
 */
 
+  /** 3) Free the MMG2D structures */
+  MMG2D_Free_all(MMG5_ARG_start,
+                 MMG5_ARG_ppMesh,&mmgMesh,MMG5_ARG_ppMet,&mmgSol,
+                 MMG5_ARG_end);
+  
   
   //vtk.write();
     

@@ -166,6 +166,13 @@ public:
   Tensor2 getNodalTensor(Indice nod, String field);
   void setResultFile(String);
   void mergeDomains();
+  
+  //LUCIANO
+  void delAllData(){ elements.del(0,elements.size()-1); nodes.del(0,nodes.size()-1);
+      
+      domains.del(0);
+      cout << "Struct Domain size "<<domains.size();
+      }
 };
 
 #endif
