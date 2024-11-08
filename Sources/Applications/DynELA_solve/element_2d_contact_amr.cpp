@@ -531,10 +531,21 @@ steel.setConductivity(4.6000000E+01);
   //MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na);
   //int np    = Global_Structure->getNodesNumber();
   int np = 121;
-  int nquad = Global_Structure->getElementsNumber();
-  int nt    = 0; //TRIS
+  int quad, nt;
   int na    = ext_edges.size(); //EDGES
   //na: Number of edges
+ 
+  bool split_quads = true;
+  
+  if (!split_quads){
+  nquad = Global_Structure->getElementsNumber();
+  nt    = 0; //TRIS    
+    
+  } else {
+    nquad = 0;
+    nt = 2 * Global_Structure->getElementsNumber();
+    
+  }
  
  //https://github.com/tan2/DynEarthSol/blob/master/remeshing.cxx
  
@@ -546,7 +557,11 @@ steel.setConductivity(4.6000000E+01);
   else 
     cout << "MESH CREATED OK"<<endl;
   cout << "Number of points: "<< mmgMesh->na << endl;
-  mmgMesh->edge[39].a = 1;
+
+  
+
+
+
   int *edges = new int[2 * na]; 
 
   //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
@@ -565,6 +580,7 @@ steel.setConductivity(4.6000000E+01);
 
   cout << "EDGES ALLOCATED "<<endl;
 
+  if (!split_quads){
   //int MMG2D_Set_quadrilateral(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int v3, MMG5_int ref, MMG5_int pos)
   //int  MMG2D_Set_quadrilaterals(MMG5_pMesh mesh, MMG5_int *quadra, MMG5_int *refs) {
   for (int e=0;e<100;e++){
@@ -575,6 +591,22 @@ steel.setConductivity(4.6000000E+01);
                                    , NULL, e);
   
   
+  }
+  
+  } else { //split quads = true
+    //int  MMG2D_Set_triangles(MMG5_pMesh mesh, MMG5_int *tria, MMG5_int *refs)
+    //int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos)
+    for (int e=0;e<200;e+=2){
+    MMG2D_Set_triangles(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id,
+                                  Global_Structure->getElement(e)->nodes(1)->Id,
+                                  Global_Structure->getElement(e)->nodes(2)->Id,
+                                  NULL, e);
+  
+    MMG2D_Set_triangles(mmgMesh,  Global_Structure->getElement(e)->nodes(1)->Id,
+                                  Global_Structure->getElement(e)->nodes(2)->Id,
+                                  Global_Structure->getElement(e)->nodes(3)->Id,
+                                  NULL, e+1);
+    }
   }
   /** Set parameters : for example set the maximal edge size to 0.1 */
   MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
