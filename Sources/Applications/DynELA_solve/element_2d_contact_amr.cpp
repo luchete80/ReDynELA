@@ -139,7 +139,7 @@ std::vector <std::pair<int,int>> getAllEdges(Structure *st, int el_ind_max){
            extEdges.push_back(edgeEntry.first); 
         }
     }  
-  
+
   cout << "Edge sizes All:" <<edgeCount.size()<<", External: "<<extEdges.size()<<endl;
   return extEdges;
 }
@@ -501,8 +501,11 @@ steel.setConductivity(4.6000000E+01);
   Global_Structure->vtk->pstructure = Global_Structure;
   
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
-  Global_Structure->solve();
-
+  
+  
+  //Global_Structure->solve();
+  
+  ////////////////////--------------------------------------------------------------------------------------
   
   cout << "REMESHING ..."<<endl;
   ////// MMG THINGS
@@ -531,11 +534,12 @@ steel.setConductivity(4.6000000E+01);
   //MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na);
   //int np    = Global_Structure->getNodesNumber();
   int np = 121;
-  int quad, nt;
+  int nquad, nt;
   int na    = ext_edges.size(); //EDGES
   //na: Number of edges
  
   bool split_quads = true;
+  bool remesh = true; //Give the existing mesh
   
   if (!split_quads){
   nquad = Global_Structure->getElementsNumber();
@@ -543,7 +547,10 @@ steel.setConductivity(4.6000000E+01);
     
   } else {
     nquad = 0;
-    nt = 2 * Global_Structure->getElementsNumber();
+    if (!remesh)
+      nt = 0;
+    else 
+      nt = 2 * Global_Structure->getElementsNumber();
     
   }
  
@@ -560,13 +567,46 @@ steel.setConductivity(4.6000000E+01);
 
   
 
+ //// CHECK libexamples/mmg2d/adaptation_example0/example0_b
+///#ifndef MMG_VERSION_LE
+  /** a) get the size of the mesh: vertices, tetra, triangles, quadrangles,edges
+   * //if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
+  if ( MMG2D_Set_meshSize(mmgMesh,4,2,0,4) != 1 )  exit(EXIT_FAILURE);
+#endif
 
+
+ /*
+  * 
+  * /** b) give the vertices: for each vertex, give the coordinates, the reference
+      and the position in mesh of the vertex 
+  ///int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos) {    
+  if ( MMG2D_Set_vertex(mmgMesh,0  ,0  ,0  ,  1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,1  ,0  ,0  ,  2) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,1  ,1  ,0  ,  3) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,0  ,1  ,0  ,  4) != 1 )  exit(EXIT_FAILURE);
+
+ /// c) give the triangles: for each triangle,
+      give the vertices index, the reference and the position of the triangle
+  ////int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos) {
+  if ( MMG2D_Set_triangle(mmgMesh,  1,  2,  4, 1, 1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_triangle(mmgMesh,  2,  3,  4, 1, 2) != 1 )  exit(EXIT_FAILURE);
+
+
+  /** d) give the edges (not mandatory): for each edge,
+      give the vertices index, the reference and the position of the edge 
+  if ( MMG2D_Set_edge(mmgMesh,  1,  2, 1, 1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  2,  3, 2, 2) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  3,  4, 3, 3) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  4,  1, 4, 4) != 1 )  exit(EXIT_FAILURE);
+  
+  
+  ***/
 
   int *edges = new int[2 * na]; 
 
   //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
   for (int n=0;n<121;n++){
-    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n))
+    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
       cout << "ERROR ALLOCATING NODE "<<n<<endl;
   }
   cout << "Vertices allocated"<<endl;
@@ -575,48 +615,89 @@ steel.setConductivity(4.6000000E+01);
   //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
   //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
   for (int e=0;e<na;e++)
-    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first, ext_edges[e].second, NULL, e) !=1)
+    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
       cout << "ERROR CREATING EDGE "<<endl;
 
   cout << "EDGES ALLOCATED "<<endl;
 
+  cout << "First Node ID "<< Global_Structure->getNode(0)->Id << endl;
+  cout << "LAST Node ID "<< Global_Structure->getNode(np-1)->Id << endl;
+  
   if (!split_quads){
   //int MMG2D_Set_quadrilateral(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int v3, MMG5_int ref, MMG5_int pos)
   //int  MMG2D_Set_quadrilaterals(MMG5_pMesh mesh, MMG5_int *quadra, MMG5_int *refs) {
   for (int e=0;e<100;e++){
-    MMG2D_Set_quadrilateral(mmgMesh, Global_Structure->getElement(e)->nodes(0)->Id
-                                   , Global_Structure->getElement(e)->nodes(1)->Id
-                                   , Global_Structure->getElement(e)->nodes(2)->Id
-                                   , Global_Structure->getElement(e)->nodes(3)->Id
+    MMG2D_Set_quadrilateral(mmgMesh, Global_Structure->getElement(e)->nodes(0)->Id+1
+                                   , Global_Structure->getElement(e)->nodes(1)->Id+1
+                                   , Global_Structure->getElement(e)->nodes(2)->Id+1
+                                   , Global_Structure->getElement(e)->nodes(3)->Id+1
                                    , NULL, e);
   
   
   }
-  
+  cout << "QUADS written "<<endl;
   } else { //split quads = true
     //int  MMG2D_Set_triangles(MMG5_pMesh mesh, MMG5_int *tria, MMG5_int *refs)
     //int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos)
-    for (int e=0;e<200;e+=2){
-    MMG2D_Set_triangles(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id,
-                                  Global_Structure->getElement(e)->nodes(1)->Id,
-                                  Global_Structure->getElement(e)->nodes(2)->Id,
-                                  NULL, e);
-  
-    MMG2D_Set_triangles(mmgMesh,  Global_Structure->getElement(e)->nodes(1)->Id,
-                                  Global_Structure->getElement(e)->nodes(2)->Id,
-                                  Global_Structure->getElement(e)->nodes(3)->Id,
-                                  NULL, e+1);
-    }
+    cout << "SETTING TRIANGLES "<<endl;
+    cout << "INDEX " << Global_Structure->getElement(0)->nodes(0)->Id<<endl;
+    cout << "INDEX " << Global_Structure->getElement(0)->nodes(1)->Id<<endl;
+    cout << "INDEX " << Global_Structure->getElement(0)->nodes(2)->Id<<endl;
+    if (remesh){
+      for (int e=0;e<100;e++){
+      
+
+
+        MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
+                                      Global_Structure->getElement(e)->nodes(1)->Id+1,
+                                      Global_Structure->getElement(e)->nodes(2)->Id+1,
+                                      NULL, 2*e);
+      
+        MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(1)->Id+1,
+                                      Global_Structure->getElement(e)->nodes(2)->Id+1,
+                                      Global_Structure->getElement(e)->nodes(3)->Id+1,
+                                      NULL, 2*e+1);
+        
+        
+      }
+    }// If remesh
   }
+  
+  if ( MMG2D_Chk_meshData(mmgMesh,mmgSol) != 1 ) 
+    exit(EXIT_FAILURE);
+  else 
+    cout << "Initial Mesh check succeed "<<endl;
+    
+    
+  ///// SOULUTION
+  if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
+    exit(EXIT_FAILURE);
+    for(int k=1 ; k<=np ; k++) {
+    if ( MMG2D_Set_scalarSol(mmgSol,1.0,k) != 1 ) exit(EXIT_FAILURE);
+  }
+    
+    
   /** Set parameters : for example set the maximal edge size to 0.1 */
-  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
+  //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.2);
 
   /** Higher verbosity level */
-  MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
+  //MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
 
 
   /////// Generate the mesh ///////
-  int ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
+  //int ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
+  
+  
+  //////////////////////////////////////////////////////////
+  ///// REMESH
+  //////////////////////////////////////////////////////////
+
+  int ier;
+  if (remesh)
+  ier = MMG2D_mmg2dlib(mmgMesh,mmgSol);
+  
+  
+  //////////////////////////////////////////////////////////////
   
   cout << "New mesh npoints "<<mmgMesh->np<<endl;
 
@@ -654,9 +735,10 @@ steel.setConductivity(4.6000000E+01);
   cout << "Node count" << mmgMesh->np<<endl;
   cout <<"Mesh node 0 "<<mmgMesh->point[0].c[0]<<endl;
   
-  for (int n=0;n<mmgMesh->np;n++)
-    Global_Structure->createNode(n, mmgMesh->point[n].c[0], mmgMesh->point[n].c[1], 0);
-
+  for (int n=0;n<mmgMesh->np;n++){
+    Global_Structure->createNode(n+1, mmgMesh->point[n].c[0], mmgMesh->point[n].c[1], 0);
+    
+  }
 
   Element* el3 = new ElTri3n2D();
   Global_Structure->setDefaultElement(el3);
@@ -667,17 +749,19 @@ steel.setConductivity(4.6000000E+01);
     //mmgMesh->tria[tri].v[1] <<", "<<
     //mmgMesh->tria[tri].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
     bool error = false;
+    int ierror, terr;
     for (int i=0;i<3;i++){ 
 //      cout << "i "<<i<<endl;
-      if (mmgMesh->tria[tri].v[i] >= Global_Structure->getNodesNumber()){
-        cout << "ERROR on INDEX "<<endl;
+      if (mmgMesh->tria[tri].v[i] > Global_Structure->getNodesNumber()){
+        cout << "ERROR on INDEX "<< mmgMesh->tria[tri].v[i]<< "ON element "<< tri <<endl;
         error = true;
       }
     }
     if (!error)
-    Global_Structure->createElement(tri,mmgMesh->tria[tri].v[0] ,
-                                        mmgMesh->tria[tri].v[1] , 
-                                        mmgMesh->tria[tri].v[2] );
+      Global_Structure->createElement(tri,mmgMesh->tria[tri].v[0]  ,
+                                          mmgMesh->tria[tri].v[1] , 
+                                          mmgMesh->tria[tri].v[2] );
+                                          
                                         
   }
   
