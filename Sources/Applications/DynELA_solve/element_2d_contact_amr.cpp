@@ -48,6 +48,9 @@
 // if the header file is in "include/mmg/mmg2d"
 #include "mmg/mmg2d/libmmg2d.h"
 
+#define MAX4(a,b,c,d)  (((MAX0(a,b)) > (MAX0(c,d))) ? (MAX0(a,b)) : (MAX0(c,d)))
+#define MAX0(a,b)     (((a) > (b)) ? (a) : (b))
+
 String parsedFileName;
 
 /* FROM INTERNAL
@@ -143,6 +146,8 @@ std::vector <std::pair<int,int>> getAllEdges(Structure *st, int el_ind_max){
   cout << "Edge sizes All:" <<edgeCount.size()<<", External: "<<extEdges.size()<<endl;
   return extEdges;
 }
+
+void writeMesh (MMG5_pMesh mmgMesh, char *fname);
 
 int main() {
 
@@ -505,6 +510,8 @@ steel.setConductivity(4.6000000E+01);
   
   //Global_Structure->solve();
   
+  
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////--------------------------------------------------------------------------------------
   
   cout << "REMESHING ..."<<endl;
@@ -557,6 +564,38 @@ steel.setConductivity(4.6000000E+01);
  //https://github.com/tan2/DynEarthSol/blob/master/remeshing.cxx
  
   
+/*----------------------------------------
+ //// CHECK libexamples/mmg2d/adaptation_example0/example0_b
+///#ifndef MMG_VERSION_LE
+  //a) get the size of the mesh: vertices, tetra, triangles, quadrangles,edges
+   //if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
+  if ( MMG2D_Set_meshSize(mmgMesh,4,2,0,4) != 1 )  exit(EXIT_FAILURE);
+//#endif
+
+  //b) give the vertices: for each vertex, give the coordinates, the reference
+  //      and the position in mesh of the vertex 
+  ///int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos) {    
+  if ( MMG2D_Set_vertex(mmgMesh,0  ,0  ,0  ,  1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,1  ,0  ,0  ,  2) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,1  ,1  ,0  ,  3) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_vertex(mmgMesh,0  ,1  ,0  ,  4) != 1 )  exit(EXIT_FAILURE);
+
+ /// c) give the triangles: for each triangle,
+   //   give the vertices index, the reference and the position of the triangle
+  ////int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos) {
+  if ( MMG2D_Set_triangle(mmgMesh,  1,  2,  4, 1, 1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_triangle(mmgMesh,  2,  3,  4, 1, 2) != 1 )  exit(EXIT_FAILURE);
+
+
+ //d) give the edges (not mandatory): for each edge,
+   //   give the vertices index, the reference and the position of the edge 
+  if ( MMG2D_Set_edge(mmgMesh,  1,  2, 1, 1) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  2,  3, 2, 2) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  3,  4, 3, 3) != 1 )  exit(EXIT_FAILURE);
+  if ( MMG2D_Set_edge(mmgMesh,  4,  1, 4, 4) != 1 )  exit(EXIT_FAILURE);
+  ------------------------------------------------------------------*/
+    
+  
   //In API_functions
   //int MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na) {
   if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
@@ -567,57 +606,24 @@ steel.setConductivity(4.6000000E+01);
 
   
 
- //// CHECK libexamples/mmg2d/adaptation_example0/example0_b
-///#ifndef MMG_VERSION_LE
-  /** a) get the size of the mesh: vertices, tetra, triangles, quadrangles,edges
-   * //if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
-  if ( MMG2D_Set_meshSize(mmgMesh,4,2,0,4) != 1 )  exit(EXIT_FAILURE);
-#endif
-
-
- /*
-  * 
-  * /** b) give the vertices: for each vertex, give the coordinates, the reference
-      and the position in mesh of the vertex 
-  ///int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos) {    
-  if ( MMG2D_Set_vertex(mmgMesh,0  ,0  ,0  ,  1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,1  ,0  ,0  ,  2) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,1  ,1  ,0  ,  3) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,0  ,1  ,0  ,  4) != 1 )  exit(EXIT_FAILURE);
-
- /// c) give the triangles: for each triangle,
-      give the vertices index, the reference and the position of the triangle
-  ////int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos) {
-  if ( MMG2D_Set_triangle(mmgMesh,  1,  2,  4, 1, 1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_triangle(mmgMesh,  2,  3,  4, 1, 2) != 1 )  exit(EXIT_FAILURE);
-
-
-  /** d) give the edges (not mandatory): for each edge,
-      give the vertices index, the reference and the position of the edge 
-  if ( MMG2D_Set_edge(mmgMesh,  1,  2, 1, 1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  2,  3, 2, 2) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  3,  4, 3, 3) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  4,  1, 4, 4) != 1 )  exit(EXIT_FAILURE);
-  
-  
-  ***/
-
   int *edges = new int[2 * na]; 
 
   //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
-  for (int n=0;n<121;n++){
-    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
-      cout << "ERROR ALLOCATING NODE "<<n<<endl;
-  }
+  //for (int n=0;n<121;n++){
+  //  if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
+  //    cout << "ERROR ALLOCATING NODE "<<n<<endl;
+  //}
   cout << "Vertices allocated"<<endl;
   //int *ref = new int[na];
   ////// MMG2D_Set_edges IS CRASHING
   //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
   //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
-  for (int e=0;e<na;e++)
-    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
-      cout << "ERROR CREATING EDGE "<<endl;
-
+  for (int e=0;e<na;e++){
+    //if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
+    //  cout << "ERROR CREATING EDGE "<<endl;
+    cout << "EDGE "<< e<< "Node "<<ext_edges[e].first<<", "<<ext_edges[e].second<<endl;
+  
+  }
   cout << "EDGES ALLOCATED "<<endl;
 
   cout << "First Node ID "<< Global_Structure->getNode(0)->Id << endl;
@@ -640,42 +646,43 @@ steel.setConductivity(4.6000000E+01);
     //int  MMG2D_Set_triangles(MMG5_pMesh mesh, MMG5_int *tria, MMG5_int *refs)
     //int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos)
     cout << "SETTING TRIANGLES "<<endl;
-    cout << "INDEX " << Global_Structure->getElement(0)->nodes(0)->Id<<endl;
-    cout << "INDEX " << Global_Structure->getElement(0)->nodes(1)->Id<<endl;
-    cout << "INDEX " << Global_Structure->getElement(0)->nodes(2)->Id<<endl;
+
     if (remesh){
       for (int e=0;e<100;e++){
-      
+    cout << "INDEX " << Global_Structure->getElement(e)->nodes(0)->Id+1<<" "<<
+                        Global_Structure->getElement(e)->nodes(1)->Id+1<<" "<<
+                        Global_Structure->getElement(e)->nodes(2)->Id+1<<endl;      
 
 
         MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
                                       Global_Structure->getElement(e)->nodes(1)->Id+1,
                                       Global_Structure->getElement(e)->nodes(2)->Id+1,
-                                      NULL, 2*e);
+                                      NULL, 2*e+1);
       
         MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(1)->Id+1,
                                       Global_Structure->getElement(e)->nodes(2)->Id+1,
                                       Global_Structure->getElement(e)->nodes(3)->Id+1,
-                                      NULL, 2*e+1);
+                                      NULL, 2*e+2);
         
         
       }
     }// If remesh
   }
+    
   
   if ( MMG2D_Chk_meshData(mmgMesh,mmgSol) != 1 ) 
     exit(EXIT_FAILURE);
   else 
     cout << "Initial Mesh check succeed "<<endl;
-    
+/*    
     
   ///// SOULUTION
   if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
     exit(EXIT_FAILURE);
     for(int k=1 ; k<=np ; k++) {
-    if ( MMG2D_Set_scalarSol(mmgSol,1.0,k) != 1 ) exit(EXIT_FAILURE);
+    if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
   }
-    
+  */  
     
   /** Set parameters : for example set the maximal edge size to 0.1 */
   //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.2);
@@ -687,7 +694,7 @@ steel.setConductivity(4.6000000E+01);
   /////// Generate the mesh ///////
   //int ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
   
-  
+  writeMesh(mmgMesh, "ini.mesh");
   //////////////////////////////////////////////////////////
   ///// REMESH
   //////////////////////////////////////////////////////////
@@ -707,9 +714,10 @@ steel.setConductivity(4.6000000E+01);
   } else if ( ier == MMG5_LOWFAILURE )
     fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
 
-  /*save result*/
-  //if ( MMG2D_saveMesh(mmgMesh,outname) != 1 )
-  //  exit(EXIT_FAILURE);
+  char *fileout = "test.mesh";
+  ///save result
+  //if ( MMG2D_saveMesh(mmgMesh,fileout) != 1 )
+  //    exit(EXIT_FAILURE);
 
   /*save metric*/
   //if ( MMG2D_saveSol(mmgMesh,mmgSol,outname) != 1 )
@@ -736,8 +744,8 @@ steel.setConductivity(4.6000000E+01);
   cout <<"Mesh node 0 "<<mmgMesh->point[0].c[0]<<endl;
   
   for (int n=0;n<mmgMesh->np;n++){
-    Global_Structure->createNode(n+1, mmgMesh->point[n].c[0], mmgMesh->point[n].c[1], 0);
-    
+    Global_Structure->createNode(n, mmgMesh->point[n+1].c[0], mmgMesh->point[n].c[1], 0);
+    cout << "Vert "<< n << ": "<<mmgMesh->point[n+1].c[0] << ", "<< mmgMesh->point[n].c[1]<<endl;
   }
 
   Element* el3 = new ElTri3n2D();
@@ -745,22 +753,22 @@ steel.setConductivity(4.6000000E+01);
   
   for (int tri=0;tri<mmgMesh->nt;tri++){
     //cout << "\ntria "<<tri<<endl;
-    //cout << mmgMesh->tria[tri].v[0] <<", "<<
-    //mmgMesh->tria[tri].v[1] <<", "<<
-    //mmgMesh->tria[tri].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
+    //cout << mmgMesh->tria[tri+1].v[0] <<", "<<
+    //mmgMesh->tria[tri+1].v[1] <<", "<<
+    //mmgMesh->tria[tri+1].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
     bool error = false;
     int ierror, terr;
     for (int i=0;i<3;i++){ 
 //      cout << "i "<<i<<endl;
-      if (mmgMesh->tria[tri].v[i] > Global_Structure->getNodesNumber()){
-        cout << "ERROR on INDEX "<< mmgMesh->tria[tri].v[i]<< "ON element "<< tri <<endl;
+      if (mmgMesh->tria[tri+1].v[i] > Global_Structure->getNodesNumber()){
+        cout << "ERROR on INDEX "<< mmgMesh->tria[tri+1].v[i]<< "ON element "<< tri <<endl;
         error = true;
       }
     }
     if (!error)
-      Global_Structure->createElement(tri,mmgMesh->tria[tri].v[0]  ,
-                                          mmgMesh->tria[tri].v[1] , 
-                                          mmgMesh->tria[tri].v[2] );
+      Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0] -1 ,
+                                          mmgMesh->tria[tri+1].v[1] -1, 
+                                          mmgMesh->tria[tri+1].v[2] -1);
                                           
                                         
   }
@@ -826,16 +834,130 @@ steel.setConductivity(4.6000000E+01);
     fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
 */
 
+ 
+ /////////////////////// WRITE .MESH format ///////////////////////////
+  
+
+  //vtk.write();
+
+
   /** 3) Free the MMG2D structures */
   MMG2D_Free_all(MMG5_ARG_start,
                  MMG5_ARG_ppMesh,&mmgMesh,MMG5_ARG_ppMet,&mmgSol,
                  MMG5_ARG_end);
   
-  
-  //vtk.write();
-    
+     
   return 0;
   
   
   
 }
+
+
+void writeMesh (MMG5_pMesh mmgMesh , char *fname){
+  
+  int np, nt, na;
+  
+  FILE *inm; 
+  double          Point[3],Sol;  
+  if( !(inm = fopen(fname,"w")) ) {
+    fprintf(stderr,"  ** UNABLE TO OPEN OUTPUT MESH FILE.\n");
+    exit(EXIT_FAILURE);
+  }
+  fprintf(inm,"MeshVersionFormatted 2\n");
+  fprintf(inm,"\nDimension 2\n");
+  
+  if ( MMG2D_Get_meshSize(mmgMesh,&np,&nt,NULL,&na) !=1 )  exit(EXIT_FAILURE);  
+  
+
+
+  
+  int             nreq,ref, nr,nc,*corner, *required, *ridge;  
+  MMG5_int Tria[3], Edge[2],k;
+  
+  /* Table to know if a vertex is corner */
+  corner = (int*)calloc(np+1,sizeof(int));
+  if ( !corner ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  /* Table to know if a vertex/tetra/tria/edge is required */
+  required = (int*)calloc(MAX4(np,0,nt,na)+1 ,sizeof(int));
+  if ( !required ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  /* Table to know if a coponant is corner and/or required */
+  ridge = (int*)calloc(na+1 ,sizeof(int));
+  if ( !ridge ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+
+  nreq = 0; nc = 0;
+  fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
+  for(k=1; k<=np; k++) {
+    /** b) Vertex recovering */
+    if ( MMG2D_Get_vertex(mmgMesh,&(Point[0]),&(Point[1]),
+                          &ref,&(corner[k]),&(required[k])) != 1 )
+      exit(EXIT_FAILURE);
+    fprintf(inm,"%.15lg %.15lg %"MMG5_PRId" \n",Point[0],Point[1],ref);
+    if ( corner[k] )  nc++;
+    if ( required[k] )  nreq++;
+  }
+  fprintf(inm,"\nCorners\n%"MMG5_PRId"\n",nc);
+  for(k=1; k<=np; k++) {
+    if ( corner[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
+  }
+  fprintf(inm,"\nRequiredVertices\n%"MMG5_PRId"\n",nreq);
+  for(k=1; k<=np; k++) {
+    if ( required[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
+  }
+  free(corner);
+  corner = NULL;
+
+  nreq = 0;
+  fprintf(inm,"\nTriangles\n%"MMG5_PRId"\n",nt);
+  for(k=1; k<=nt; k++) {
+    /** d) Triangles recovering */
+    if ( MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),
+                            &ref,&(required[k])) != 1 )
+      exit(EXIT_FAILURE);
+    fprintf(inm,"%"MMG5_PRId" %"MMG5_PRId" %"MMG5_PRId" %"MMG5_PRId" \n",Tria[0],Tria[1],Tria[2],ref);
+    if ( required[k] )  nreq++;
+  }
+  fprintf(inm,"\nRequiredTriangles\n%"MMG5_PRId"\n",nreq);
+  for(k=1; k<=nt; k++) {
+    if ( required[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
+  }
+
+  nreq = 0;nr = 0;
+  fprintf(inm,"\nEdges\n%"MMG5_PRId"\n",na);
+  for(k=1; k<=na; k++) {
+    /** e) Edges recovering */
+    if ( MMG2D_Get_edge(mmgMesh,&(Edge[0]),&(Edge[1]),&ref,
+                        &(ridge[k]),&(required[k])) != 1 )  exit(EXIT_FAILURE);
+    fprintf(inm,"%"MMG5_PRId" %"MMG5_PRId" %"MMG5_PRId" \n",Edge[0],Edge[1],ref);
+    if ( ridge[k] )  nr++;
+    if ( required[k] )  nreq++;
+  }
+  fprintf(inm,"\nRequiredEdges\n%"MMG5_PRId"\n",nreq);
+  for(k=1; k<=na; k++) {
+    if ( required[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
+  }
+  fprintf(inm,"\nRidges\n%"MMG5_PRId"\n",nr);
+  for(k=1; k<=na; k++) {
+    if ( ridge[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
+  }
+
+  fprintf(inm,"\nEnd\n");
+  fclose(inm);
+
+  free(required);
+  required = NULL;
+  free(ridge);
+  ridge    = NULL;
+  
+  
+  
+  }
