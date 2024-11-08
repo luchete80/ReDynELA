@@ -508,7 +508,7 @@ steel.setConductivity(4.6000000E+01);
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
   
   
-  //Global_Structure->solve();
+  Global_Structure->solve();
   
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -557,7 +557,12 @@ steel.setConductivity(4.6000000E+01);
     if (!remesh)
       nt = 0;
     else 
-      nt = 2 * Global_Structure->getElementsNumber();
+      
+      //NOT WANT TO DO IN ALL MESH
+      //nt = 2 * Global_Structure->getElementsNumber();
+      nt = 200;
+
+      //na = 0;
     
   }
  
@@ -609,18 +614,18 @@ steel.setConductivity(4.6000000E+01);
   int *edges = new int[2 * na]; 
 
   //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
-  //for (int n=0;n<121;n++){
-  //  if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
-  //    cout << "ERROR ALLOCATING NODE "<<n<<endl;
-  //}
+  for (int n=0;n<np;n++){
+    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
+      cout << "ERROR ALLOCATING NODE "<<n<<endl;
+  }
   cout << "Vertices allocated"<<endl;
   //int *ref = new int[na];
   ////// MMG2D_Set_edges IS CRASHING
   //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
   //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
   for (int e=0;e<na;e++){
-    //if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
-    //  cout << "ERROR CREATING EDGE "<<endl;
+    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
+      cout << "ERROR CREATING EDGE "<<endl;
     cout << "EDGE "<< e<< "Node "<<ext_edges[e].first<<", "<<ext_edges[e].second<<endl;
   
   }
@@ -659,7 +664,7 @@ steel.setConductivity(4.6000000E+01);
                                       Global_Structure->getElement(e)->nodes(2)->Id+1,
                                       NULL, 2*e+1);
       
-        MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(1)->Id+1,
+        MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
                                       Global_Structure->getElement(e)->nodes(2)->Id+1,
                                       Global_Structure->getElement(e)->nodes(3)->Id+1,
                                       NULL, 2*e+2);
@@ -674,7 +679,7 @@ steel.setConductivity(4.6000000E+01);
     exit(EXIT_FAILURE);
   else 
     cout << "Initial Mesh check succeed "<<endl;
-/*    
+  
     
   ///// SOULUTION
   if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
@@ -682,10 +687,10 @@ steel.setConductivity(4.6000000E+01);
     for(int k=1 ; k<=np ; k++) {
     if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
   }
-  */  
+   
     
   /** Set parameters : for example set the maximal edge size to 0.1 */
-  //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.2);
+  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
 
   /** Higher verbosity level */
   //MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
@@ -704,6 +709,8 @@ steel.setConductivity(4.6000000E+01);
   ier = MMG2D_mmg2dlib(mmgMesh,mmgSol);
   
   
+  
+  writeMesh(mmgMesh, "out.mesh");
   //////////////////////////////////////////////////////////////
   
   cout << "New mesh npoints "<<mmgMesh->np<<endl;
