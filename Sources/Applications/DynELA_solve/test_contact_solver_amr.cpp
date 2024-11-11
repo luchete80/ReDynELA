@@ -53,47 +53,6 @@
 
 String parsedFileName;
 
-/* FROM INTERNAL
- * 
- * std::vector <std::pair<int,int>> getAllEdges(Structure *st){
-  
-      // Define the mesh as a vector of triangles, each represented by 3 vertex indices
-    std::vector<std::vector<int>> triangles = {
-        {1, 2, 3},
-        {3, 2, 4},
-        {4, 2, 5},
-        {5, 2, 1}
-    };
-
-    // Map to store edges and their counts
-    std::map<std::pair<int, int>, int> edgeCount;
-    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
-
-    // Iterate over each triangle and its edges
-    for (const auto& triangle : triangles) {
-        for (int i = 0; i < 3; ++i) {
-            int v1 = triangle[i];
-            int v2 = triangle[(i + 1) % 3]; // Next vertex in the triangle
-            std::pair<int, int> edge = createEdge(v1, v2);
-            edgeCount[edge]++;
-        }
-    }
-
-    // Print the exterior edges
-    std::cout << "Exterior edges:" << std::endl;
-    for (const auto& edgeEntry : edgeCount) {
-        if (edgeEntry.second == 1) { // Exterior edge appears only once
-            std::cout << "Edge between vertices " << edgeEntry.first.first
-                      << " and " << edgeEntry.first.second << std::endl;
-           extEdges.push_back(edgeEntry.first); 
-        }
-    }  
-  
-  
-}
-
-----*/
-
 // A helper function to create a sorted pair for an edge
 std::pair<int, int> createEdge(int a, int b) {
     return (a < b) ? std::make_pair(a, b) : std::make_pair(b, a);
@@ -157,36 +116,8 @@ int main() {
   Global_Structure = new Structure();
 
 
-  /*
-  model->createNode(1, 0.,0.,0.);
-  model->createNode(2, .1,0.,0.);
-  model->createNode(3, 0.,.1,0.);
-  model->createNode(4, .1,.1,0.);
-
-
-  model->createNode(5, 0.5,1.,0.);
-  model->createNode(6, 1.5,1.,0.);
-  model->createNode(7, 0.5,2.,0.);
-  model->createNode(8, 1.5,2.,0.);
-*/
-
-
-  
   Real elem_x, elem_y;
   Element* el = new ElQua4nAx(1);
-
-/*
-  Real nbNodes=1;
-  Real i;
-  Real j;
-  for (j=0;j<=nbElementsHauteur;j+=1) 
-    for (i=0;i<=nbElementsLargeur;i+=1) {
-      struct.createNode(nbNodes,i*dxLargeur,j*dxHauteur,0);
-      cylinderNds.add(nbNodes);
-      nbNodes++;
-  };
-  nbNodes--;
-  */
 
   Element* el2 = new ElQua4nAx(2);
   Indice *ind = new Indice[4];
@@ -195,8 +126,6 @@ int main() {
   Indice *ind2 = new Indice[4];
   ind2[0]=5;ind2[1]=6;ind2[2]=8;ind2[3]=7;  
 
-  //model->add(el);
-  //model->add(el2);
   
   //model->createElement(el,ind);
   cout << "Elem size "<<model->elements.size()<<endl;
@@ -566,41 +495,6 @@ steel.setConductivity(4.6000000E+01);
     
   }
  
- //https://github.com/tan2/DynEarthSol/blob/master/remeshing.cxx
- 
-  
-/*----------------------------------------
- //// CHECK libexamples/mmg2d/adaptation_example0/example0_b
-///#ifndef MMG_VERSION_LE
-  //a) get the size of the mesh: vertices, tetra, triangles, quadrangles,edges
-   //if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
-  if ( MMG2D_Set_meshSize(mmgMesh,4,2,0,4) != 1 )  exit(EXIT_FAILURE);
-//#endif
-
-  //b) give the vertices: for each vertex, give the coordinates, the reference
-  //      and the position in mesh of the vertex 
-  ///int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos) {    
-  if ( MMG2D_Set_vertex(mmgMesh,0  ,0  ,0  ,  1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,1  ,0  ,0  ,  2) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,1  ,1  ,0  ,  3) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_vertex(mmgMesh,0  ,1  ,0  ,  4) != 1 )  exit(EXIT_FAILURE);
-
- /// c) give the triangles: for each triangle,
-   //   give the vertices index, the reference and the position of the triangle
-  ////int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos) {
-  if ( MMG2D_Set_triangle(mmgMesh,  1,  2,  4, 1, 1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_triangle(mmgMesh,  2,  3,  4, 1, 2) != 1 )  exit(EXIT_FAILURE);
-
-
- //d) give the edges (not mandatory): for each edge,
-   //   give the vertices index, the reference and the position of the edge 
-  if ( MMG2D_Set_edge(mmgMesh,  1,  2, 1, 1) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  2,  3, 2, 2) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  3,  4, 3, 3) != 1 )  exit(EXIT_FAILURE);
-  if ( MMG2D_Set_edge(mmgMesh,  4,  1, 4, 4) != 1 )  exit(EXIT_FAILURE);
-  ------------------------------------------------------------------*/
-    
-  
   //In API_functions
   //int MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na) {
   if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)==0)
@@ -794,60 +688,6 @@ steel.setConductivity(4.6000000E+01);
 
   
   out.close();
-
-/*
-  int ge = 0; //global elem
-  Global_Structure->setDefaultElement(el);
-  cout << "\nReallocating mesh" <<endl;
-  for (int q=0;q<mmgMesh->nquad;q++){
-    cout << "quad "<<q<<endl;
-    
-      Global_Structure->createElement(ge, mmgMesh->quadra[q].v[0], 
-                                                  mmgMesh->quadra[q].v[1],
-                                                  mmgMesh->quadra[q].v[2],
-                                                  mmgMesh->quadra[q].v[3]);    
-    ge++;
-  }
-*/  
-  //cout << "Struct El count "<<Global_Structure->getElementsNumber()<<endl;
-     
-        
-  //inout_s.c
-  
-  /** Set parameters : for example set the maximal edge size to 0.1 */
-  //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
-
-  /** Higher verbosity level */
-  //MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
-
-
-  /** Generate the mesh */
-  //ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
-
-
-/*
-  // Set parameters : for example set the maximal edge size to 0.1 
-  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
-
-  // Higher verbosity level
-  MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
-
-
-  // Generate the mesh 
-  ier = MMG2D_mmg2dmesh(mmgMesh,mmgSol);
-
-  if ( ier == MMG5_STRONGFAILURE ) {
-    fprintf(stdout,"BAD ENDING OF MMG2DMESH: UNABLE TO SAVE MESH\n");
-    return(ier);
-  } else if ( ier == MMG5_LOWFAILURE )
-    fprintf(stdout,"BAD ENDING OF MMG2DMESH\n");
-*/
-
- 
- /////////////////////// WRITE .MESH format ///////////////////////////
-  
-
-  //vtk.write();
 
 
   /** 3) Free the MMG2D structures */

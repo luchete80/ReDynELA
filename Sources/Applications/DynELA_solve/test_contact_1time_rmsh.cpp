@@ -863,6 +863,10 @@ steel.setConductivity(4.6000000E+01);
 }
 
 
+////////////////////////////////////////////////////////////////////
+///////////////////////////// WRITE MESH IN GMSH FORMAT ////////////
+
+
 void writeMesh (MMG5_pMesh mmgMesh , char *fname){
   
   int np, nt, na;

@@ -58,6 +58,12 @@ class ExplicitSolverRmsh : public Solver
 {
 
 public:
+
+  int    rmsh_max_step_interval;
+  double rmsh_max_val_interval;
+  double rmsh_max_angle_interval; //distortion
+
+
   // constructor
   ExplicitSolverRmsh();
   ExplicitSolverRmsh(const ExplicitSolverRmsh &X);
