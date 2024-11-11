@@ -685,7 +685,9 @@ steel.setConductivity(4.6000000E+01);
   if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
     exit(EXIT_FAILURE);
     for(int k=1 ; k<=np ; k++) {
-    if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
+    //if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
+    
+    if (MMG2D_Set_scalarSol(mmgSol,0.8-Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0), k) != 1) exit(EXIT_FAILURE);
   }
    
     
