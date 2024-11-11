@@ -34,6 +34,8 @@
 #include <Boundary.h>
 #include <NodeMotion.h>
 
+#include "mmg/mmg2d/libmmg2d.h"
+
 extern Structure *Global_Structure;
 
 /*!
