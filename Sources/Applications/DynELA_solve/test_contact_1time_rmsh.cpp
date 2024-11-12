@@ -774,11 +774,12 @@ steel.setConductivity(4.6000000E+01);
         error = true;
       }
     }
-    if (!error)
+    if (!error){
+      cout << "TRI IND: "<<mmgMesh->tria[tri+1].v[0]<<", "<<mmgMesh->tria[tri+1].v[1]<<", "<<mmgMesh->tria[tri+1].v[2] <<endl;
       Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0] -1 ,
                                           mmgMesh->tria[tri+1].v[1] -1, 
                                           mmgMesh->tria[tri+1].v[2] -1);
-                                          
+     }                                     
                                         
   }
   

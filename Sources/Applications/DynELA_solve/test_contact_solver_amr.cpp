@@ -548,10 +548,11 @@ steel.setConductivity(4.6000000E+01);
 
     if (remesh){
       for (int e=0;e<100;e++){
+/*
     cout << "INDEX " << Global_Structure->getElement(e)->nodes(0)->Id+1<<" "<<
                         Global_Structure->getElement(e)->nodes(1)->Id+1<<" "<<
                         Global_Structure->getElement(e)->nodes(2)->Id+1<<endl;      
-
+*/
 
         MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
                                       Global_Structure->getElement(e)->nodes(1)->Id+1,
@@ -611,6 +612,8 @@ steel.setConductivity(4.6000000E+01);
   
   cout << "New mesh npoints "<<mmgMesh->np<<endl;
 
+  if ( MMG2D_Get_meshSize(mmgMesh,&np,&nt,NULL,&na) !=1 )  exit(EXIT_FAILURE);  
+
   if ( ier == MMG5_STRONGFAILURE ) {
     fprintf(stdout,"BAD ENDING OF MMG2DMESH: UNABLE TO SAVE MESH\n");
     return(ier);
@@ -645,20 +648,68 @@ steel.setConductivity(4.6000000E+01);
   
   cout << "Node count" << mmgMesh->np<<endl;
   cout <<"Mesh node 0 "<<mmgMesh->point[0].c[0]<<endl;
+
+
+
   
-  for (int n=0;n<mmgMesh->np;n++){
-    Global_Structure->createNode(n, mmgMesh->point[n+1].c[0], mmgMesh->point[n].c[1], 0);
-    cout << "Vert "<< n << ": "<<mmgMesh->point[n+1].c[0] << ", "<< mmgMesh->point[n].c[1]<<endl;
+  int             nreq,ref, nr,nc,*corner, *required, *ridge;  
+  MMG5_int Tria[3], Edge[2],k;
+  double          Point[3];
+  
+  /* Table to know if a vertex is corner */
+  corner = (int*)calloc(np+1,sizeof(int));
+  if ( !corner ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
   }
+  /* Table to know if a vertex/tetra/tria/edge is required */
+  required = (int*)calloc(MAX4(np,0,nt,na)+1 ,sizeof(int));
+  if ( !required ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  /* Table to know if a coponant is corner and/or required */
+  ridge = (int*)calloc(na+1 ,sizeof(int));
+  if ( !ridge ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+
+  nreq = 0; nc = 0;
+  //fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
+  for(k=1; k<=np; k++) {
+    /** b) Vertex recovering */
+    if ( MMG2D_Get_vertex(mmgMesh,&(Point[0]),&(Point[1]),
+                          &ref,&(corner[k]),&(required[k])) != 1 )
+      exit(EXIT_FAILURE);
+    //fprintf(inm,"%.15lg %.15lg %"MMG5_PRId" \n",Point[0],Point[1],ref);
+    //Global_Structure->createNode(n, mmgMesh->point[n+1].c[0], mmgMesh->point[n].c[1], 0);
+    Global_Structure->createNode(k-1, Point[0], Point[1], 0.0);
+    //cout << "Point "<<k<<", ref "<<ref<<endl;
+
+    if ( corner[k] )  nc++;
+    if ( required[k] )  nreq++;
+  }
+  
+  
+  
+  corner = (int*)calloc(np+1,sizeof(int));
+  if ( !corner ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  
 
   Element* el3 = new ElTri3n2D();
   Global_Structure->setDefaultElement(el3);
   
+  cout << "NODE NUMBER "<<Global_Structure->getNodesNumber()<<endl;
+  
   for (int tri=0;tri<mmgMesh->nt;tri++){
-    //cout << "\ntria "<<tri<<endl;
-    //cout << mmgMesh->tria[tri+1].v[0] <<", "<<
-    //mmgMesh->tria[tri+1].v[1] <<", "<<
-    //mmgMesh->tria[tri+1].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
+    cout << "\ntria "<<tri<<endl;
+    cout << mmgMesh->tria[tri+1].v[0] <<", "<<
+    mmgMesh->tria[tri+1].v[1] <<", "<<
+    mmgMesh->tria[tri+1].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
     bool error = false;
     int ierror, terr;
     for (int i=0;i<3;i++){ 
@@ -668,13 +719,38 @@ steel.setConductivity(4.6000000E+01);
         error = true;
       }
     }
-    if (!error)
-      Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0] -1 ,
-                                          mmgMesh->tria[tri+1].v[1] -1, 
-                                          mmgMesh->tria[tri+1].v[2] -1);
+    if (!error){
+      MMG5_int Tria[3];
+      int ref;
+      
+      /*
+      //DOES NOT WORK
+      Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0]  ,
+                                          mmgMesh->tria[tri+1].v[1] , 
+                                          mmgMesh->tria[tri+1].v[2] );
+
+*/
+    
+
+    //if ( 
+    MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),&ref,&(required[tri+1]));
+    // != 1 )
+    
+    {   
+      cout << "Tria "<< tri<<", ind: "<<  Tria[0]<<", "<<Tria[1]<<", "<<Tria[2]<<endl;
+      Global_Structure->createElement(tri,Tria[0] -1,
+                                          Tria[1]-1, 
+                                          Tria[2]-1);
                                           
+
+    } 
+    //else 
+    //  cout << "ERROR on element "<<tri<<endl;
                                         
-  }
+
+                                        
+    }
+  }//TRI
   
   VtkInterface out;
   out.openFile("test.vtk");
@@ -751,6 +827,7 @@ void writeMesh (MMG5_pMesh mmgMesh , char *fname){
                           &ref,&(corner[k]),&(required[k])) != 1 )
       exit(EXIT_FAILURE);
     fprintf(inm,"%.15lg %.15lg %"MMG5_PRId" \n",Point[0],Point[1],ref);
+    cout << "Point "<< k << Point[0]<< ", " <<Point[1]<<endl; 
     if ( corner[k] )  nc++;
     if ( required[k] )  nreq++;
   }
@@ -769,9 +846,11 @@ void writeMesh (MMG5_pMesh mmgMesh , char *fname){
   fprintf(inm,"\nTriangles\n%"MMG5_PRId"\n",nt);
   for(k=1; k<=nt; k++) {
     /** d) Triangles recovering */
+
     if ( MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),
                             &ref,&(required[k])) != 1 )
       exit(EXIT_FAILURE);
+    cout << "COORECT tri "<< k << " nodes "<< k <<": " << Tria[0] << ", "<<Tria[1]<<", "<<Tria[2]<<endl;
     fprintf(inm,"%"MMG5_PRId" %"MMG5_PRId" %"MMG5_PRId" %"MMG5_PRId" \n",Tria[0],Tria[1],Tria[2],ref);
     if ( required[k] )  nreq++;
   }
