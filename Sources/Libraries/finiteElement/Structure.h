@@ -85,6 +85,12 @@ public:
   
   VtkInterface *vtk; //new
 
+  //Put in structure
+  int    rmsh_max_step_interval;
+  double rmsh_max_length;
+  double rmsh_max_angle; //distortion
+
+
 private:
   /** @dia:route 20,26;h,123.065,81.1794,114.75,9.5794,119.065 */
   Element *defaultElement; //!< Element par d�faut
@@ -173,6 +179,9 @@ public:
       domains.del(0);
       cout << "Struct Domain size "<<domains.size();
       }
+      
+  void reMesh(); //ACORDING TO PARAMETERS
+  
 };
 
 #endif

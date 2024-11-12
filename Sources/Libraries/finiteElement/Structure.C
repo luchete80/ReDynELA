@@ -35,6 +35,8 @@
 #include <Select.h>
 #include <Boundary.h>
 
+#include "mmg/mmg2d/libmmg2d.h"
+
 #define nodeDisplayOnlineFrequency 100
 #define elementDisplayOnlineFrequency 100
 
@@ -1367,4 +1369,295 @@ void Structure::mergeDomains()
   }
 
   domains.del(1, domains.size() - 1);
+}
+
+
+#define MAX4(a,b,c,d)  (((MAX0(a,b)) > (MAX0(c,d))) ? (MAX0(a,b)) : (MAX0(c,d)))
+#define MAX0(a,b)     (((a) > (b)) ? (a) : (b))
+
+void Structure::reMesh()
+{
+
+  
+  int             nreq,ref, nr,nc,*corner, *required, *ridge;  
+  MMG5_int Tria[3], Edge[2],k;
+  double          Point[3];
+  
+  int np, nt, na, nquad;
+  
+  
+  
+  
+
+   
+  MMG5_pMesh      mmgMesh;
+  MMG5_pSol       mmgSol;
+
+  mmgMesh = NULL;
+  mmgSol  = NULL;
+  MMG2D_Init_mesh(MMG5_ARG_start,
+                  MMG5_ARG_ppMesh,&mmgMesh,MMG5_ARG_ppMet,&mmgSol,
+                  MMG5_ARG_end);
+  
+
+  np = this->getNodesNumber();
+  
+  //// CHANGE DIM
+  
+  nt = nquad = 0;
+  na = 0;
+  for (int e=0;e<this->getElementsNumber();e++){
+    if (this->getElement(e)->getNumberOfNodes() == 3) 
+      nt++;
+    else 
+      nquad++;
+  }
+  nt += 2*nquad; //Splits
+  cout << "Number of tris: "<<nt << ", quads "<<nquad<<endl;
+  
+  
+  cout << "Structure Node count "<<endl;
+  
+
+  //In API_functions
+  //int MMG2D_Set_meshSize(MMG5_pMesh mesh, MMG5_int np, MMG5_int nt, MMG5_int nquad, MMG5_int na) {
+  if (MMG2D_Set_meshSize(mmgMesh, np,  nt,  nquad, na)!=1)
+    cout << "ERROR ALLOCATING MESH"<<endl;
+  else 
+    cout << "MESH CREATED OK"<<endl;
+  cout << "Number of points: "<< mmgMesh->na << endl;
+
+  
+  //Global_Structure->createNode(0,0,0,0);
+  
+  cout << "struct nodecount "<<Global_Structure->getNodesNumber()<<endl;
+  
+  
+  cout << "Node count" << mmgMesh->np<<endl;
+  cout <<"Mesh node 0 "<<mmgMesh->point[0].c[0]<<endl;
+
+
+
+  if ( MMG2D_Chk_meshData(mmgMesh,mmgSol) != 1 ) 
+    exit(EXIT_FAILURE);
+  else 
+    cout << "Initial Mesh check succeed "<<endl;
+  
+  
+  
+     
+
+  int *edges = new int[2 * na]; 
+
+  //int MMG2D_Set_vertex(MMG5_pMesh mesh, double c0, double c1, MMG5_int ref, MMG5_int pos)
+  for (int n=0;n<np;n++){
+    if (!MMG2D_Set_vertex(mmgMesh, Global_Structure->getNode(n)->coords(0), Global_Structure->getNode(n)->coords(1), NULL, n+1))
+      cout << "ERROR ALLOCATING NODE "<<n<<endl;
+  }
+  cout << "Vertices allocated"<<endl;
+  
+  /*  //int *ref = new int[na];
+  ////// MMG2D_Set_edges IS CRASHING
+  //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
+  //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
+  for (int e=0;e<na;e++){
+    if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
+      cout << "ERROR CREATING EDGE "<<endl;
+    cout << "EDGE "<< e<< "Node "<<ext_edges[e].first<<", "<<ext_edges[e].second<<endl;
+  
+  }
+  cout << "EDGES ALLOCATED "<<endl;
+  */
+  cout << "First Node ID "<< Global_Structure->getNode(0)->Id << endl;
+  cout << "LAST Node ID "<< Global_Structure->getNode(np-1)->Id << endl;
+ //split quads = true
+    //int  MMG2D_Set_triangles(MMG5_pMesh mesh, MMG5_int *tria, MMG5_int *refs)
+    //int MMG2D_Set_triangle(MMG5_pMesh mesh, MMG5_int v0, MMG5_int v1, MMG5_int v2, MMG5_int ref, MMG5_int pos)
+    cout << "SETTING TRIANGLES "<<endl;
+
+
+      for (int e=0;e<100;e++){
+        if (this->getElement(e)->getNumberOfNodes() == 4){
+
+          MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
+                                        Global_Structure->getElement(e)->nodes(1)->Id+1,
+                                        Global_Structure->getElement(e)->nodes(2)->Id+1,
+                                        NULL, 2*e+1);
+        
+          MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
+                                        Global_Structure->getElement(e)->nodes(2)->Id+1,
+                                        Global_Structure->getElement(e)->nodes(3)->Id+1,
+                                        NULL, 2*e+2);
+          
+        }
+      
+      }
+
+  
+
+    
+  ///// SOULUTION
+  if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
+    exit(EXIT_FAILURE);
+    for(int k=1 ; k<=np ; k++) {
+    //if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
+    
+    if (MMG2D_Set_scalarSol(mmgSol,0.8-Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0), k) != 1) exit(EXIT_FAILURE);
+  }
+   
+    
+  /** Set parameters : for example set the maximal edge size to 0.1 */
+  MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
+
+  /** Higher verbosity level */
+  //MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
+  
+  
+  
+  ////////////////////////////////// REMESH 
+  
+    int ier;
+
+  ier = MMG2D_mmg2dlib(mmgMesh,mmgSol);
+  
+  /////////////////////////////////////////////
+
+  if ( MMG2D_Get_meshSize(mmgMesh,&np,&nt,NULL,&na) !=1 )  exit(EXIT_FAILURE); 
+  cout << "New node count " << np <<endl;
+    
+  //// BEFORE REMAP
+  
+  this->delAllData(); 
+  
+  ///// DELETE FIRST CURRENT DOMAIN!
+  Domain *dom = new Domain();
+  Global_Structure->setDomain( dom);
+  cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
+  
+  
+  
+
+  
+  /* Table to know if a vertex is corner */
+  corner = (int*)calloc(np+1,sizeof(int));
+  if ( !corner ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  /* Table to know if a vertex/tetra/tria/edge is required */
+  required = (int*)calloc(MAX4(np,0,nt,na)+1 ,sizeof(int));
+  if ( !required ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  /* Table to know if a coponant is corner and/or required */
+  ridge = (int*)calloc(na+1 ,sizeof(int));
+  if ( !ridge ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+
+  nreq = 0; nc = 0;
+  //fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
+  for(k=1; k<=np; k++) {
+    /** b) Vertex recovering */
+    if ( MMG2D_Get_vertex(mmgMesh,&(Point[0]),&(Point[1]),
+                          &ref,&(corner[k]),&(required[k])) != 1 )
+      exit(EXIT_FAILURE);
+    //fprintf(inm,"%.15lg %.15lg %"MMG5_PRId" \n",Point[0],Point[1],ref);
+    //Global_Structure->createNode(n, mmgMesh->point[n+1].c[0], mmgMesh->point[n].c[1], 0);
+    Global_Structure->createNode(k-1, Point[0], Point[1], 0.0);
+    //cout << "Point "<<k<<", ref "<<ref<<endl;
+
+    if ( corner[k] )  nc++;
+    if ( required[k] )  nreq++;
+  }
+  
+  
+  
+  corner = (int*)calloc(np+1,sizeof(int));
+  if ( !corner ) {
+    perror("  ## Memory problem: calloc");
+    exit(EXIT_FAILURE);
+  }
+  
+
+  Element* el3 = new ElTri3n2D();
+  Global_Structure->setDefaultElement(el3);
+  
+  cout << "NODE NUMBER "<<Global_Structure->getNodesNumber()<<endl;
+  
+  for (int tri=0;tri<mmgMesh->nt;tri++){
+    /*
+    cout << "\ntria "<<tri<<endl;
+    cout << mmgMesh->tria[tri+1].v[0] <<", "<<
+    mmgMesh->tria[tri+1].v[1] <<", "<<
+    mmgMesh->tria[tri+1].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
+    */
+    bool error = false;
+    int ierror, terr;
+    for (int i=0;i<3;i++){ 
+//      cout << "i "<<i<<endl;
+      if (mmgMesh->tria[tri+1].v[i] > Global_Structure->getNodesNumber()){
+        cout << "ERROR on INDEX "<< mmgMesh->tria[tri+1].v[i]<< "ON element "<< tri <<endl;
+        error = true;
+      }
+    }
+    if (!error){
+      MMG5_int Tria[3];
+      int ref;
+      
+      /*
+      //DOES NOT WORK
+      Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0]  ,
+                                          mmgMesh->tria[tri+1].v[1] , 
+                                          mmgMesh->tria[tri+1].v[2] );
+
+*/
+    
+
+    //if ( 
+    MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),&ref,&(required[tri+1]));
+    // != 1 )
+    
+    {   
+      //cout << "Tria "<< tri<<", ind: "<<  Tria[0]<<", "<<Tria[1]<<", "<<Tria[2]<<endl;
+      Global_Structure->createElement(tri,Tria[0] -1,
+                                          Tria[1]-1, 
+                                          Tria[2]-1);
+                                          
+
+    } 
+    //else 
+    //  cout << "ERROR on element "<<tri<<endl;
+                                        
+
+                                        
+    }
+  }//TRI
+
+  
+  VtkInterface out;
+  out.openFile("test.vtk");
+  //out.dataWrite();
+  out.pstructure = Global_Structure;  
+  out.headerWrite();
+  out.nodesWrite();
+
+  // Write the nodes
+  out.elementsWrite();
+
+  
+  out.close();
+
+
+  /** 3) Free the MMG2D structures */
+  MMG2D_Free_all(MMG5_ARG_start,
+                 MMG5_ARG_ppMesh,&mmgMesh,MMG5_ARG_ppMet,&mmgSol,
+                 MMG5_ARG_end);
+  
+     
+//  return 0;
+  
+  /// AFTER REMAP
 }

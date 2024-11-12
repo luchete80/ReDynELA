@@ -623,12 +623,14 @@ steel.setConductivity(4.6000000E+01);
   ////// MMG2D_Set_edges IS CRASHING
   //int MMG2D_Set_edges(MMG5_pMesh mesh, MMG5_int *edges, MMG5_int *refs)
   //int res = MMG2D_Set_edges(mmgMesh, edges, nullptr);
+  /*
   for (int e=0;e<na;e++){
     if (MMG2D_Set_edge(mmgMesh, ext_edges[e].first+1, ext_edges[e].second+1, NULL, e+1) !=1)
       cout << "ERROR CREATING EDGE "<<endl;
     cout << "EDGE "<< e<< "Node "<<ext_edges[e].first<<", "<<ext_edges[e].second<<endl;
   
   }
+  */
   cout << "EDGES ALLOCATED "<<endl;
 
   cout << "First Node ID "<< Global_Structure->getNode(0)->Id << endl;
