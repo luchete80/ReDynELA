@@ -28,7 +28,85 @@
 
 #include <VtkInterface.h>
 
+#include <iostream>
+#include <vector>
+#include <set>
+
+
+#include <iostream>
+
+#include <vector>
+#include <set>
+#include <utility>
+#include <utility>
+
+#include <map>
+
+/** Include the mmg2d library hader file */
+// if the header file is in the "include" directory
+// #include "libmmg2d.h"
+// if the header file is in "include/mmg/mmg2d"
+#include "mmg/mmg2d/libmmg2d.h"
+
+#define MAX4(a,b,c,d)  (((MAX0(a,b)) > (MAX0(c,d))) ? (MAX0(a,b)) : (MAX0(c,d)))
+#define MAX0(a,b)     (((a) > (b)) ? (a) : (b))
+
 String parsedFileName;
+
+// A helper function to create a sorted pair for an edge
+std::pair<int, int> createEdge(int a, int b) {
+    return (a < b) ? std::make_pair(a, b) : std::make_pair(b, a);
+}
+
+std::vector <std::pair<int,int>> getAllEdges(Structure *st, int el_ind_max){
+ 
+ 
+    // Map to store edges and their counts
+    std::map<std::pair<int, int>, int> edgeCount;
+    std::vector<std::pair<int, int>>  extEdges; //If we wnat only ext edges
+
+
+    int emax = 0;   
+    int ecount = st->getElementsNumber();
+    cout << "checking on "<< ecount <<" elements"<<endl;
+    for (int e=0;e<el_ind_max;e++){
+      Element *pel = st->getElement(e);
+      
+      for (int k = 0; k < pel->getNumberOfSideFaces(); k++){
+        //int toHave = pel->getNumberOfNodesOnSideFace(k);
+        //THIS IS LIKE IN SIDE.C
+        Node* n1 = pel->getNodeOnSideFace(k, 0); //ASUMMIN
+        Node* n2 = pel->getNodeOnSideFace(k, 1); //ASUMMIN
+
+        //cout << "Elem "<< e <<" N1 "<<n1->Id<<", "<<n2->Id<<endl;
+        std::pair<int, int> edge = createEdge(n1->Id, n2->Id); //COMPARE WITH number
+        if (edge.second > emax) emax = edge.second ;
+        edgeCount[edge]++; //THIS INSERT ELEMENT 
+        
+        //cout << "Edge count size "<<edgeCount.size()<<endl;
+        //Node * 
+        //Node *Element::getNodeOnEdge(short edge, short node)
+        
+        }
+      
+    }//Element
+    cout << "DONE, max edge node index"<<emax<<endl;
+
+    // Print the exterior edges
+    std::cout << "Exterior edges:" << std::endl;
+    for (const auto& edgeEntry : edgeCount) {
+        if (edgeEntry.second == 1) { // Exterior edge appears only once
+            //std::cout << "Edge between vertices " << edgeEntry.first.first
+              //        << " and " << edgeEntry.first.second << std::endl;
+           extEdges.push_back(edgeEntry.first); 
+        }
+    }  
+
+  cout << "Edge sizes All:" <<edgeCount.size()<<", External: "<<extEdges.size()<<endl;
+  return extEdges;
+}
+
+
 
 int main() {
 
@@ -38,36 +116,8 @@ int main() {
   Global_Structure = new Structure();
 
 
-  /*
-  model->createNode(1, 0.,0.,0.);
-  model->createNode(2, .1,0.,0.);
-  model->createNode(3, 0.,.1,0.);
-  model->createNode(4, .1,.1,0.);
-
-
-  model->createNode(5, 0.5,1.,0.);
-  model->createNode(6, 1.5,1.,0.);
-  model->createNode(7, 0.5,2.,0.);
-  model->createNode(8, 1.5,2.,0.);
-*/
-
-
-  
   Real elem_x, elem_y;
   Element* el = new ElQua4nAx(1);
-
-/*
-  Real nbNodes=1;
-  Real i;
-  Real j;
-  for (j=0;j<=nbElementsHauteur;j+=1) 
-    for (i=0;i<=nbElementsLargeur;i+=1) {
-      struct.createNode(nbNodes,i*dxLargeur,j*dxHauteur,0);
-      cylinderNds.add(nbNodes);
-      nbNodes++;
-  };
-  nbNodes--;
-  */
 
   Element* el2 = new ElQua4nAx(2);
   Indice *ind = new Indice[4];
@@ -76,8 +126,6 @@ int main() {
   Indice *ind2 = new Indice[4];
   ind2[0]=5;ind2[1]=6;ind2[2]=8;ind2[3]=7;  
 
-  //model->add(el);
-  //model->add(el2);
   
   //model->createElement(el,ind);
   cout << "Elem size "<<model->elements.size()<<endl;
@@ -151,7 +199,7 @@ int main() {
     for (i=0;i<=10;i+=1) {
       //cout <<"x "<<i*0.1+0.5<<endl;
       //cout << "y "<<j*0.1+1.0<<endl;
-      Global_Structure->createNode(nbNodes,i*0.125,j*0.10+1.00001,0);
+      Global_Structure->createNode(nbNodes,i*0.045,j*0.10+1.00001,0);
       //cylinderNds.add(nbNodes);
       nbNodes++;
   };
@@ -327,7 +375,7 @@ steel.setConductivity(4.6000000E+01);
 
 
     BoundarySpeed topSpeed;
-    topSpeed.set(0.0000000E+00, -1.0, 0.0000000E+00);
+    topSpeed.set(0.0000000E+00, -5.0, 0.0000000E+00);
     Global_Structure->attachConstantBC(&topSpeed,&top);
 
   
@@ -343,9 +391,9 @@ steel.setConductivity(4.6000000E+01);
   //ExplicitSolverCH *solver = new ExplicitSolverCH();
   
 
-  ExplicitSolver *solver = new ExplicitSolver();
+  ExplicitSolverRmsh *solver = new ExplicitSolverRmsh();
   
-  solver->setTimes(0.0,1.0);
+
   solver->setTimeStepMethod("Courant");
    
   Global_Structure->addSolver(solver);
@@ -360,10 +408,15 @@ steel.setConductivity(4.6000000E+01);
 
  omp_set_num_threads(4);
  cout << "THREADS "<<omp_get_max_threads<<endl;
+
+
  
   //Real stopTime=80.0e-6;
-  Real stopTime=1.0e-2;
-
+  Real stopTime=5.0e-2;
+  Real saveTime=stopTime/40.0;
+  solver->setTimes(0.0,stopTime);
+  
+  
   Global_Structure->resultFile=new io_Data;
   Global_Structure->resultFile->name = "test";
   Global_Structure->resultFile->pstructure = Global_Structure;
@@ -372,7 +425,7 @@ steel.setConductivity(4.6000000E+01);
 
 
 
-  Global_Structure->setSaveTimes(0,stopTime,stopTime);
+  Global_Structure->setSaveTimes(0,stopTime,saveTime);
 
   //Global_Structure->setResultFile("results.bin");
     
@@ -382,13 +435,11 @@ steel.setConductivity(4.6000000E+01);
   Global_Structure->vtk->pstructure = Global_Structure;
   
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
-  Global_Structure->solve();
-
-
   
-  //vtk.write();
-    
-  return 0;
+  
+  Global_Structure->solve();
+  
+  Global_Structure->reMesh();
   
   
   

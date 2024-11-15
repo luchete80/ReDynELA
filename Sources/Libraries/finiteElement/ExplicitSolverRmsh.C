@@ -21,7 +21,7 @@
 	Class ExplicitSolver implementation
 */
 
-#include <ExplicitSolver.h>
+#include <ExplicitSolverRmsh.h>
 //#include <Grid.h>
 #include <Structure.h>
 #include <Node.h>
@@ -33,6 +33,8 @@
 #include <IntegrationPoint.h>
 #include <Boundary.h>
 #include <NodeMotion.h>
+
+#include "mmg/mmg2d/libmmg2d.h"
 
 extern Structure *Global_Structure;
 
@@ -52,7 +54,7 @@ extern Structure *Global_Structure;
 
 */
 //-----------------------------------------------------------------------------
-ExplicitSolver::ExplicitSolver() : Solver()
+ExplicitSolverRmsh::ExplicitSolverRmsh() : Solver()
 //-----------------------------------------------------------------------------
 {
       name = "ExplicitSolver";
@@ -71,7 +73,7 @@ ExplicitSolver::ExplicitSolver() : Solver()
 
 */
 //-----------------------------------------------------------------------------
-ExplicitSolver::ExplicitSolver(const ExplicitSolver &X)
+ExplicitSolverRmsh::ExplicitSolverRmsh(const ExplicitSolverRmsh &X)
 //-----------------------------------------------------------------------------
 {
 }
@@ -81,7 +83,7 @@ ExplicitSolver::ExplicitSolver(const ExplicitSolver &X)
 
 */
 //-----------------------------------------------------------------------------
-ExplicitSolver::~ExplicitSolver()
+ExplicitSolverRmsh::~ExplicitSolverRmsh()
 //-----------------------------------------------------------------------------
 {
 }
@@ -90,7 +92,7 @@ ExplicitSolver::~ExplicitSolver()
 //#define PRINT_Execution_Solve
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::solve(Real _upTime)
+void ExplicitSolverRmsh::solve(Real _upTime)
 //-----------------------------------------------------------------------------
 {
       // cpu times record
@@ -291,13 +293,13 @@ void ExplicitSolver::solve(Real _upTime)
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeForces()
+void ExplicitSolverRmsh::computeForces()
 //-----------------------------------------------------------------------------
 {
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computePredictions()
+void ExplicitSolverRmsh::computePredictions()
 //-----------------------------------------------------------------------------
 {
       Indice i;
@@ -362,7 +364,7 @@ void ExplicitSolver::computePredictions()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::updateGrid()
+void ExplicitSolverRmsh::updateGrid()
 //-----------------------------------------------------------------------------
 {
       Indice no;
@@ -377,7 +379,7 @@ void ExplicitSolver::updateGrid()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeStrains()
+void ExplicitSolverRmsh::computeStrains()
 //-----------------------------------------------------------------------------
 {
       Indice el;
@@ -393,7 +395,7 @@ void ExplicitSolver::computeStrains()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeConstitutive()
+void ExplicitSolverRmsh::computeConstitutive()
 //-----------------------------------------------------------------------------
 {
       Element *pel;
@@ -414,7 +416,7 @@ void ExplicitSolver::computeConstitutive()
       }
 }
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeState()
+void ExplicitSolverRmsh::computeState()
 //-----------------------------------------------------------------------------
 {
       Indice el;
@@ -437,7 +439,7 @@ Cette m�thode effectue la phase de calcul des contraintes sur la structure. De
 La m�thode de la rotation finale instantan�e est utilis�e pour traiter les probl�mes d'objectivit� de la loi de comportement.
 */
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeStress()
+void ExplicitSolverRmsh::computeStress()
 //-----------------------------------------------------------------------------
 {
       Element *pel;
@@ -585,7 +587,7 @@ void ExplicitSolver::computeStress()
       }
 }
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeMass()
+void ExplicitSolverRmsh::computeMass()
 //-----------------------------------------------------------------------------
 {
       Element *pel;
@@ -646,7 +648,7 @@ void ExplicitSolver::computeMass()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeEnergy()
+void ExplicitSolverRmsh::computeEnergy()
 //-----------------------------------------------------------------------------
 {
       Element *pel;
@@ -712,7 +714,7 @@ void ExplicitSolver::computeEnergy()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeMomentum()
+void ExplicitSolverRmsh::computeMomentum()
 //-----------------------------------------------------------------------------
 {
       Element *pel;
@@ -791,7 +793,7 @@ void ExplicitSolver::computeMomentum()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeCorrections()
+void ExplicitSolverRmsh::computeCorrections()
 //-----------------------------------------------------------------------------
 {
       Indice i;
@@ -841,7 +843,7 @@ void ExplicitSolver::computeCorrections()
 }
 
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeTemperatures()
+void ExplicitSolverRmsh::computeTemperatures()
 //-----------------------------------------------------------------------------
 {
       Node *pnd;
@@ -865,7 +867,7 @@ void ExplicitSolver::computeTemperatures()
       }
 }
 //-----------------------------------------------------------------------------
-void ExplicitSolver::scanInterfaces()
+void ExplicitSolverRmsh::scanInterfaces()
 //-----------------------------------------------------------------------------
 {
 #ifdef PRINT_Execution_Solve
@@ -885,7 +887,7 @@ void ExplicitSolver::scanInterfaces()
   }*/
 }
 //-----------------------------------------------------------------------------
-void ExplicitSolver::computeContactForces()
+void ExplicitSolverRmsh::computeContactForces()
 //-----------------------------------------------------------------------------
 {
       Indice no;
@@ -900,7 +902,7 @@ void ExplicitSolver::computeContactForces()
       }
 }
 //-----------------------------------------------------------------------------
-void ExplicitSolver::updateTime()
+void ExplicitSolverRmsh::updateTime()
 //-----------------------------------------------------------------------------
 {
       domain->currentTime += timeStep;

@@ -48,6 +48,7 @@
 #include <ExportDynELA.h>
 #include <ExplicitSolver.h>
 #include <ExplicitSolverCH.h>
+#include <ExplicitSolverRmsh.h>
 #include <ContactLaw.h>
 #include <Coulomb.h>
 #include <HistoryFile.h>

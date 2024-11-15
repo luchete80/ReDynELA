@@ -153,9 +153,12 @@ void VtkInterface::elementsWrite()
 
   _stream << "CELL_TYPES " << nbElements << "\n";
   for (long i = 0; i < nbElements; i++)
+    if (pElement->getName()=="ElQua4nAx" || pElement->getName()=="ElQua4n2D" )
     //_stream << //dynelaData->model.elements(i)->getVtkType() << "\n";
     _stream << "9" << "\n";
-
+    else if (pElement->getName()=="ElTri3n2D" || pElement->getName()=="ElTri3nAx")
+    _stream << "5" << "\n";
+    
   _stream << "\n";
 }
 

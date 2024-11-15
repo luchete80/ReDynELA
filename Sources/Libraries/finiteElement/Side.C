@@ -78,6 +78,7 @@ void Side::computeScanVolume()
 void Side::computeSideFacesNormals()
 //-----------------------------------------------------------------------------
 {
+
   Indice i;
   //cout << "SIDE NODES "<<nodes.size()<<endl;
   // reinit a zero des normales des vertex
@@ -93,8 +94,10 @@ void Side::computeSideFacesNormals()
     sides(i)->computeNormalVertex();
 
   // normalisation des normales des vertex
-  for (i = 0; i < nodes.size(); i++)
+  for (i = 0; i < nodes.size(); i++){
     nodes(i)->normal.normalize();
+    //cout << "SIDE NORMAL: "<<nodes(i)->normal<<endl;
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +115,7 @@ void Side::Init()
   {
     // the first node
     pnd = nodes(i);
-    cout << "Node ELement "<<pnd->elements.size()<<endl;
+    cout << "SIDE INIT, Node " << i <<" ELement size"<<pnd->elements.size()<<endl;
     for (j = 0; j < pnd->elements.size(); j++)
     {
       cout << "Element node size "<<pnd->elements.size()<<endl;

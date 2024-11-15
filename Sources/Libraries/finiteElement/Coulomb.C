@@ -134,5 +134,5 @@ void Coulomb::computetangentialForce(Real fn, Vec3D &Ft)
     Ft = -(friction * Abs(fn)) * Vt;
   else
     Ft = -Abs(ft) * Vt;
-  //  cout << "Ft =" << Ft << endl;
+    //cout << "Ft =" << Ft << endl;
 }

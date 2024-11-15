@@ -85,6 +85,12 @@ public:
   
   VtkInterface *vtk; //new
 
+  //Put in structure
+  int    rmsh_max_step_interval;
+  double rmsh_max_length;
+  double rmsh_max_angle; //distortion
+
+
 private:
   /** @dia:route 20,26;h,123.065,81.1794,114.75,9.5794,119.065 */
   Element *defaultElement; //!< Element par d�faut
@@ -166,6 +172,16 @@ public:
   Tensor2 getNodalTensor(Indice nod, String field);
   void setResultFile(String);
   void mergeDomains();
+  
+  //LUCIANO
+  void delAllData(){ elements.del(0,elements.size()-1); nodes.del(0,nodes.size()-1);
+      
+      domains.del(0);
+      cout << "Struct Domain size "<<domains.size();
+      }
+      
+  void reMesh(); //ACORDING TO PARAMETERS
+  
 };
 
 #endif

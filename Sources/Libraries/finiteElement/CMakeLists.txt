@@ -3,6 +3,8 @@ FILE(GLOB SRCS *.h *.C)
 ADD_LIBRARY(dnlFE ${SRCS})
 #TARGET_LINK_LIBRARIES(libdnlLA dnlKernel lapacke lapack blas)
 
+TARGET_LINK_LIBRARIES( dnlFE mmg)
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Include of previous directories
