@@ -1672,7 +1672,7 @@ void Structure::reMesh()
   for (int n=0;n<np;n++){
     bool found = false;
     
-    cout << "NODE "<<n<<endl;
+    //cout << "NODE "<<n<<endl;
     int i=0;
     while (i<Global_Structure->getElementsNumber() && !found){
 
@@ -1746,7 +1746,7 @@ void Structure::reMesh()
         
         std::array<double, 3> lambdas =  barycentric_coordinates(tgt_nodes[n], pp[0], pp[1], pp[2]);
 
-        cout << "lambda: "<<lambdas[0]<<", "<<lambdas[1]<<", "<<lambdas[2]<<endl;
+        //cout << "lambda: "<<lambdas[0]<<", "<<lambdas[1]<<", "<<lambdas[2]<<endl;
         
         
         //Vec3D point(tgt_nodes[n][0],tgt_nodes[n][1],tgt_nodes[n][2]);
@@ -1756,7 +1756,7 @@ void Structure::reMesh()
         
         //cout << "local:" <<local(0)<<", "<<local(1)<<endl;
         
-        if (lambdas[0] >= 0 && lambdas[1] >= 0 && lambdas[2] >= 0) {
+        if (lambdas[0] >= -1.0e-4 && lambdas[1] >= -1.0e-4 && lambdas[2] >= -1.0e-4) {
           ////SOURCE MESH NODES COORD ARE pp[n] (WHICH ARE ORIGINAL MESH NPOINTS npoint[n])
           
           //double scalar0 = nnpoint[0]->getNodalValue("plasticStrain", 0);
@@ -1776,11 +1776,11 @@ void Structure::reMesh()
             std::cout << "Interpolated scalar at (" << target[0] << ", " << target[1] << ") = " 
                       << interpolated_value << "\n";
           */
-            cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
-            cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
-            cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
-                                        nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
-                                        nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
+            //cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
+            //cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
+            //cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
+            //                            nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
+            //                            nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
             found = true;
 
         } //lambdas        
@@ -1791,8 +1791,8 @@ void Structure::reMesh()
     }//Elements number
   
     if (!found) {
-        cout << "ERROR, Node "<<n<< "OUTSIDE MESH"<<endl;
-        cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
+        //cout << "ERROR, Node "<<n<< "OUTSIDE MESH"<<endl;
+        //cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
         //std::cout << "Point (" << target[0] << ", " << target[1] << ") is outside the mesh.\n";
         nf_nodes++;
     }
@@ -1833,6 +1833,7 @@ void Structure::reMesh()
   // Write the nodes
   out.elementsWrite();
 
+  out.dataWrite();
   
   out.close();
 
