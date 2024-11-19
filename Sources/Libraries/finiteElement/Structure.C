@@ -1401,6 +1401,48 @@ double interpolate_scalar(const std::array<double, 2>& p,
     return lambdas[0] * scalar0 + lambdas[1] * scalar1 + lambdas[2] * scalar2;
 }
 
+// Function to interpolate scalar values
+Vec3D interpolate_vector (const std::array<double, 2>& p,
+                          const std::array<double, 2>& p0, const std::array<double, 2>& p1, const std::array<double, 2>& p2,
+                          Vec3D v0, Vec3D v1, Vec3D v2 ) {
+    auto lambdas = barycentric_coordinates(p, p0, p1, p2);
+    
+    Vec3D ret = lambdas[0]*v0 + lambdas[1]*v1 + lambdas[2]*v2;
+    return ret;
+    //return lambdas[0] * scalar0 + lambdas[1] * scalar1 + lambdas[2] * scalar2;
+}
+
+//WITHOUT CALCULATING AGAIN INTERNAL COORDS
+double interp_scalar(std::array<double, 3> &lambdas,
+                          double scalar0, double scalar1, double scalar2 ) {
+    return lambdas[0] * scalar0 + lambdas[1] * scalar1 + lambdas[2] * scalar2;
+}
+
+inline Vec3D interp_vector (std::array<double, 3> &lambdas, //3 coordinates
+                          Vec3D v0, Vec3D v1, Vec3D v2 ) {
+    
+    Vec3D ret = lambdas[0]*v0 + lambdas[1]*v1 + lambdas[2]*v2;
+    return ret;
+    //return lambdas[0] * scalar0 + lambdas[1] * scalar1 + lambdas[2] * scalar2;
+}
+
+
+
+#define COPY_NEW (VAR, n)     fnew[n].VAR = interpolate_vector(tgt_nodes[n], pp[0], pp[1], pp[2], \
+                                                                                nnpoint[2]->New->VAR,\ 
+                                                                                nnpoint[1]->New->VAR, \
+                                                                                nnpoint[2]->New->VAR);    
+
+
+inline void Interp_NodalField(NodalField *fnew,
+                              std::array<double, 3> &lambdas,
+                              NodalField *o0, NodalField *o1, NodalField *o2 ){
+  
+  
+  fnew->disp = interp_vector(lambdas, o0->disp, o1->disp, o2->disp);    
+  fnew->ro =   interp_scalar(lambdas, o0->ro, o1->ro, o2->ro);   
+  fnew->mat_speed =   interp_vector(lambdas, o0->mat_speed, o1->mat_speed, o2->mat_speed);   
+}
 
 void Structure::reMesh()
 {
@@ -1636,15 +1678,7 @@ void Structure::reMesh()
 
     bool error = false;
     int ierror, terr;
-    /*
-    for (int i=0;i<3;i++){ 
-//      cout << "i "<<i<<endl;
-      if (mmgMesh->tria[tri+1].v[i] > Global_Structure->getNodesNumber()){
-        cout << "ERROR on INDEX "<< mmgMesh->tria[tri+1].v[i]<< "ON element "<< tri <<endl;
-        error = true;
-      }
-    }
-    */
+
     if (!error){
       MMG5_int Tria[3];
       int ref;
@@ -1667,6 +1701,10 @@ void Structure::reMesh()
     }
   }//TRI
   
+  /////////////////////////////////// MAPPING
+  std::vector <NodalField> fnew(np);
+   std::vector <NodalField> fcur(np);
+  
   int nf_nodes = 0;
   //LOOP TROUGH TARGET POINTS; TO CHECK IN WHICH ELEMENT IS INSIDE
   for (int n=0;n<np;n++){
@@ -1676,14 +1714,6 @@ void Structure::reMesh()
     int i=0;
     while (i<Global_Structure->getElementsNumber() && !found){
 
-    /*std::array<double, 3> barycentric_coordinates(const std::array<double, 2>& p,
-                                              const std::array<double, 2>& p0,
-                                              const std::array<double, 2>& p1,
-                                              const std::array<double, 2>& p2)
-                                              */
-      //auto lambdas = barycentric_coordinates(target, p0, p1, p2);
-      //COMPARE: void ElTri3nAx::glob2Loc(const Vec3D &point, Vec3D &local)
-      //IF SPLIT QUAD
       std::vector<std::array<int, 3>> conn = {
           {0, 1, 2}, {0, 2, 3}
       };
@@ -1691,48 +1721,10 @@ void Structure::reMesh()
       
       if (Global_Structure->getElement(i)->getNumberOfNodes() > 3) {
         pass = 2;
-        /*
-       //////SPLIT
-        Node *nnpoint[3];
-        std::vector<std::array<double, 2> > pp(3);
-        //std::array<double, 2> pp[3];
-        for (int p=0;p<3;p++) {
-          nnpoint[p]= Global_Structure->getElement(i)->nodes(p); //FROM ORIGINAL MESH
-          pp[p] = {nnpoint[p]->coords(0),nnpoint[p]->coords(1)};
-        }
-        
-        std::array<double, 3> lambdas =  barycentric_coordinates(tgt_nodes[n], pp[0], pp[1], pp[2]);
 
-        cout << "lambda: "<<lambdas[0]<<", "<<lambdas[1]<<", "<<lambdas[2]<<endl;
-        
-        
-        //Vec3D point(tgt_nodes[n][0],tgt_nodes[n][1],tgt_nodes[n][2]);
-        
-        //Vec3D local;
-        //Global_Structure->getElement(i)->glob2Loc(point, local);
-        
-        //cout << "local:" <<local(0)<<", "<<local(1)<<endl;
-      
-        if (lambdas[0] >= 0 && lambdas[1] >= 0 && lambdas[2] >= 0) {
-          
-          //  double scalar0 = source_scalars[v0];
-          //  double scalar1 = source_scalars[v1];
-          //  double scalar2 = source_scalars[v2];
-          //  double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);
-          //  std::cout << "Interpolated scalar at (" << target[0] << ", " << target[1] << ") = " 
-           //           << interpolated_value << "\n";
-          
-            cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
-            cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
-            cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
-                                        nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
-                                        nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
-            found = true;
-
-        } //lambdas
-          */
       } else {
         pass = 1;}
+        
       //connectivity passes
       for (int cp=0;cp<pass;cp++){
         Node *nnpoint[3];
@@ -1765,23 +1757,24 @@ void Structure::reMesh()
           double scalar0 = nnpoint[0]->New->disp(1);
           double scalar1 = nnpoint[1]->New->disp(1);
           double scalar2 = nnpoint[2]->New->disp(1);
+          tgt_scalar[n] = interpolate_scalar(tgt_nodes[n], pp[0], pp[1], pp[2], scalar0, scalar1, scalar2);    
+          
+          
+          //COPY_NEW(disp, n)
+          //fnew[n].disp = interpolate_vector(tgt_nodes[n], pp[0], pp[1], pp[2], nnpoint[2]->New->disp, 
+          //                                                                     nnpoint[1]->New->disp, 
+          //                                                                     nnpoint[2]->New->disp);    
 
-          tgt_scalar[n] = interpolate_scalar(tgt_nodes[n], pp[0], pp[1], pp[2], scalar0, scalar1, scalar2);         
+          fnew[n].disp = interp_vector(lambdas, nnpoint[0]->New->disp, 
+                                                                               nnpoint[1]->New->disp, 
+                                                                               nnpoint[2]->New->disp);  
+                                                                               
+          Interp_NodalField(&fnew[n], lambdas,nnpoint[0]->New, nnpoint[1]->New,nnpoint[2]->New);
+          //fnew[n].ro = 0 0.;
+          //tgt_scalar[n] = interpolate_scalar(tgt_nodes[n], pp[0], pp[1], pp[2], scalar[0], scalar[1], scalar[2]);         
           //double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);          
-          /*
-            double scalar0 = source_scalars[v0];
-            double scalar1 = source_scalars[v1];
-            double scalar2 = source_scalars[v2];
-            double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);
-            std::cout << "Interpolated scalar at (" << target[0] << ", " << target[1] << ") = " 
-                      << interpolated_value << "\n";
-          */
-            //cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
-            //cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
-            //cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
-            //                            nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
-            //                            nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
-            found = true;
+
+          found = true;
 
         } //lambdas        
         
@@ -1821,7 +1814,8 @@ void Structure::reMesh()
                                         );
   for(int k=0; k<np; k++) 
     //for (int c=0;c<2;c++)
-    Global_Structure->getNode(k)->New->disp(1) = tgt_scalar[k];
+    //Global_Structure->getNode(k)->New->disp(1) = tgt_scalar[k];
+    Global_Structure->getNode(k)->New = &fnew[k];
   
   VtkInterface out;
   out.openFile("test.vtk");
