@@ -1748,7 +1748,7 @@ void Structure::reMesh()
         
         //cout << "local:" <<local(0)<<", "<<local(1)<<endl;
         
-        if (lambdas[0] >= -1.0e-4 && lambdas[1] >= -1.0e-4 && lambdas[2] >= -1.0e-4) {
+        if (lambdas[0] >= -5.0e-2 && lambdas[1] >= -5.0e-2 && lambdas[2] >= -5.0e-2) {
           ////SOURCE MESH NODES COORD ARE pp[n] (WHICH ARE ORIGINAL MESH NPOINTS npoint[n])
           
           //double scalar0 = nnpoint[0]->getNodalValue("plasticStrain", 0);
