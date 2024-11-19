@@ -63,6 +63,7 @@ int main() {
     // Perform triangulation
     triangulate("z", &in, &out, nullptr);
 
+
     // Interpolate scalar values for each target point
     for (const auto& target : target_points) {
         bool found = false;
@@ -93,11 +94,7 @@ int main() {
         }
     }
 
-    // Clean up
-    free(in.pointlist);
-    free(in.trianglelist);
-    free(out.pointlist);
-    free(out.trianglelist);
+
 
     return 0;
 }

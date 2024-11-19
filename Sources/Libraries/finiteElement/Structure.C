@@ -37,6 +37,8 @@
 
 #include "mmg/mmg2d/libmmg2d.h"
 
+#include <NodalField.h>
+
 #define nodeDisplayOnlineFrequency 100
 #define elementDisplayOnlineFrequency 100
 
@@ -1375,6 +1377,31 @@ void Structure::mergeDomains()
 #define MAX4(a,b,c,d)  (((MAX0(a,b)) > (MAX0(c,d))) ? (MAX0(a,b)) : (MAX0(c,d)))
 #define MAX0(a,b)     (((a) > (b)) ? (a) : (b))
 
+#include <vector>
+#include <array>
+#include <Vec3D.h>
+
+// Function to compute barycentric coordinates
+std::array<double, 3> barycentric_coordinates(const std::array<double, 2>& p,
+                                              const std::array<double, 2>& p0,
+                                              const std::array<double, 2>& p1,
+                                              const std::array<double, 2>& p2) {
+    double denominator = (p1[0] - p0[0]) * (p2[1] - p0[1]) - (p2[0] - p0[0]) * (p1[1] - p0[1]);
+    double lambda1 = ((p1[0] - p[0]) * (p2[1] - p[1]) - (p2[0] - p[0]) * (p1[1] - p[1])) / denominator;
+    double lambda2 = ((p2[0] - p[0]) * (p0[1] - p[1]) - (p0[0] - p[0]) * (p2[1] - p[1])) / denominator;
+    double lambda3 = 1.0 - lambda1 - lambda2;
+    return {lambda1, lambda2, lambda3};
+}
+
+// Function to interpolate scalar values
+double interpolate_scalar(const std::array<double, 2>& p,
+                          const std::array<double, 2>& p0, const std::array<double, 2>& p1, const std::array<double, 2>& p2,
+                          double scalar0, double scalar1, double scalar2) {
+    auto lambdas = barycentric_coordinates(p, p0, p1, p2);
+    return lambdas[0] * scalar0 + lambdas[1] * scalar1 + lambdas[2] * scalar2;
+}
+
+
 void Structure::reMesh()
 {
 
@@ -1476,7 +1503,7 @@ void Structure::reMesh()
     cout << "SETTING TRIANGLES "<<endl;
 
 
-      for (int e=0;e<100;e++){
+      for (int e=0;e<this->getElementsNumber();e++){
         if (this->getElement(e)->getNumberOfNodes() == 4){
 
           MMG2D_Set_triangle(mmgMesh,  Global_Structure->getElement(e)->nodes(0)->Id+1,
@@ -1524,10 +1551,15 @@ void Structure::reMesh()
 
   if ( MMG2D_Get_meshSize(mmgMesh,&np,&nt,NULL,&na) !=1 )  exit(EXIT_FAILURE); 
   cout << "New node count " << np <<endl;
-    
-  //// BEFORE REMAP
-  
+
+  ///////////////// NEW: MAYBE IS SLOW
+  //Domain *source = new Domain(*Global_Structure->getCurrentDomain());
+
+  /*
+  //// BEFORE REMAP//////////////////////////////////////
   this->delAllData(); 
+  
+  
   
   ///// DELETE FIRST CURRENT DOMAIN!
   Domain *dom = new Domain();
@@ -1535,7 +1567,7 @@ void Structure::reMesh()
   cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
   
   
-  
+  */
 
   
   /* Table to know if a vertex is corner */
@@ -1556,6 +1588,15 @@ void Structure::reMesh()
     perror("  ## Memory problem: calloc");
     exit(EXIT_FAILURE);
   }
+  
+  /////COPY TO DEST
+  //std::vector <Node*>                 tgt_nodes(np);
+  std::vector <std::array<double, 2>> tgt_nodes(np);
+    
+  std::vector <std::array<int, 3>> tgt_trias(nt);  
+  
+  std::vector <double>             tgt_scalar(np);
+
 
   nreq = 0; nc = 0;
   //fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
@@ -1564,11 +1605,13 @@ void Structure::reMesh()
     if ( MMG2D_Get_vertex(mmgMesh,&(Point[0]),&(Point[1]),
                           &ref,&(corner[k]),&(required[k])) != 1 )
       exit(EXIT_FAILURE);
-    //fprintf(inm,"%.15lg %.15lg %"MMG5_PRId" \n",Point[0],Point[1],ref);
-    //Global_Structure->createNode(n, mmgMesh->point[n+1].c[0], mmgMesh->point[n].c[1], 0);
-    Global_Structure->createNode(k-1, Point[0], Point[1], 0.0);
-    //cout << "Point "<<k<<", ref "<<ref<<endl;
 
+    //Global_Structure->createNode(k-1, Point[0], Point[1], 0.0);
+
+    std::array<double, 2> p0 = {Point[0], Point[1]};
+    tgt_nodes[k-1] = p0;
+    
+    
     if ( corner[k] )  nc++;
     if ( required[k] )  nreq++;
   }
@@ -1587,15 +1630,13 @@ void Structure::reMesh()
   
   cout << "NODE NUMBER "<<Global_Structure->getNodesNumber()<<endl;
   
+  cout << "OVERALL tri count " <<nt<< endl;
+  int nt_corr = 0;
   for (int tri=0;tri<mmgMesh->nt;tri++){
-    /*
-    cout << "\ntria "<<tri<<endl;
-    cout << mmgMesh->tria[tri+1].v[0] <<", "<<
-    mmgMesh->tria[tri+1].v[1] <<", "<<
-    mmgMesh->tria[tri+1].v[2] <<", "<<"NP"<<mmgMesh->np<<endl;
-    */
+
     bool error = false;
     int ierror, terr;
+    /*
     for (int i=0;i<3;i++){ 
 //      cout << "i "<<i<<endl;
       if (mmgMesh->tria[tri+1].v[i] > Global_Structure->getNodesNumber()){
@@ -1603,39 +1644,184 @@ void Structure::reMesh()
         error = true;
       }
     }
+    */
     if (!error){
       MMG5_int Tria[3];
       int ref;
-      
-      /*
-      //DOES NOT WORK
-      Global_Structure->createElement(tri,mmgMesh->tria[tri+1].v[0]  ,
-                                          mmgMesh->tria[tri+1].v[1] , 
-                                          mmgMesh->tria[tri+1].v[2] );
 
-*/
-    
 
     //if ( 
     MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),&ref,&(required[tri+1]));
-    // != 1 )
-    
-    {   
-      //cout << "Tria "<< tri<<", ind: "<<  Tria[0]<<", "<<Tria[1]<<", "<<Tria[2]<<endl;
+/*
+      
       Global_Structure->createElement(tri,Tria[0] -1,
                                           Tria[1]-1, 
                                           Tria[2]-1);
-                                          
+ */     
+      std::array<int, 3> ta = {Tria[0] -1,Tria[1]-1,Tria[2]-1};
+      tgt_trias[tri] = ta;                                    
 
-    } 
-    //else 
-    //  cout << "ERROR on element "<<tri<<endl;
-                                        
+      nt_corr++;
 
-                                        
+                                    
     }
   }//TRI
+  
+  int nf_nodes = 0;
+  //LOOP TROUGH TARGET POINTS; TO CHECK IN WHICH ELEMENT IS INSIDE
+  for (int n=0;n<np;n++){
+    bool found = false;
+    
+    cout << "NODE "<<n<<endl;
+    int i=0;
+    while (i<Global_Structure->getElementsNumber() && !found){
 
+    /*std::array<double, 3> barycentric_coordinates(const std::array<double, 2>& p,
+                                              const std::array<double, 2>& p0,
+                                              const std::array<double, 2>& p1,
+                                              const std::array<double, 2>& p2)
+                                              */
+      //auto lambdas = barycentric_coordinates(target, p0, p1, p2);
+      //COMPARE: void ElTri3nAx::glob2Loc(const Vec3D &point, Vec3D &local)
+      //IF SPLIT QUAD
+      std::vector<std::array<int, 3>> conn = {
+          {0, 1, 2}, {0, 2, 3}
+      };
+      int pass;
+      
+      if (Global_Structure->getElement(i)->getNumberOfNodes() > 3) {
+        pass = 2;
+        /*
+       //////SPLIT
+        Node *nnpoint[3];
+        std::vector<std::array<double, 2> > pp(3);
+        //std::array<double, 2> pp[3];
+        for (int p=0;p<3;p++) {
+          nnpoint[p]= Global_Structure->getElement(i)->nodes(p); //FROM ORIGINAL MESH
+          pp[p] = {nnpoint[p]->coords(0),nnpoint[p]->coords(1)};
+        }
+        
+        std::array<double, 3> lambdas =  barycentric_coordinates(tgt_nodes[n], pp[0], pp[1], pp[2]);
+
+        cout << "lambda: "<<lambdas[0]<<", "<<lambdas[1]<<", "<<lambdas[2]<<endl;
+        
+        
+        //Vec3D point(tgt_nodes[n][0],tgt_nodes[n][1],tgt_nodes[n][2]);
+        
+        //Vec3D local;
+        //Global_Structure->getElement(i)->glob2Loc(point, local);
+        
+        //cout << "local:" <<local(0)<<", "<<local(1)<<endl;
+      
+        if (lambdas[0] >= 0 && lambdas[1] >= 0 && lambdas[2] >= 0) {
+          
+          //  double scalar0 = source_scalars[v0];
+          //  double scalar1 = source_scalars[v1];
+          //  double scalar2 = source_scalars[v2];
+          //  double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);
+          //  std::cout << "Interpolated scalar at (" << target[0] << ", " << target[1] << ") = " 
+           //           << interpolated_value << "\n";
+          
+            cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
+            cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
+            cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
+                                        nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
+                                        nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
+            found = true;
+
+        } //lambdas
+          */
+      } else {
+        pass = 1;}
+      //connectivity passes
+      for (int cp=0;cp<pass;cp++){
+        Node *nnpoint[3];
+        std::vector<std::array<double, 2> > pp(3);
+        //std::array<double, 2> pp[3];
+        for (int p=0;p<3;p++) {
+          //nnpoint[p]= Global_Structure->getElement(i)->nodes(p); //FROM ORIGINAL MESH
+          nnpoint[p]= Global_Structure->getElement(i)->nodes(conn[cp][p]); //FROM ORIGINAL MESH
+          pp[p] = {nnpoint[p]->coords(0),nnpoint[p]->coords(1)};
+        }
+        
+        std::array<double, 3> lambdas =  barycentric_coordinates(tgt_nodes[n], pp[0], pp[1], pp[2]);
+
+        cout << "lambda: "<<lambdas[0]<<", "<<lambdas[1]<<", "<<lambdas[2]<<endl;
+        
+        
+        //Vec3D point(tgt_nodes[n][0],tgt_nodes[n][1],tgt_nodes[n][2]);
+        
+        //Vec3D local;
+        //Global_Structure->getElement(i)->glob2Loc(point, local);
+        
+        //cout << "local:" <<local(0)<<", "<<local(1)<<endl;
+        
+        if (lambdas[0] >= 0 && lambdas[1] >= 0 && lambdas[2] >= 0) {
+          ////SOURCE MESH NODES COORD ARE pp[n] (WHICH ARE ORIGINAL MESH NPOINTS npoint[n])
+          
+          //double scalar0 = nnpoint[0]->getNodalValue("plasticStrain", 0);
+          //double scalar1 = nnpoint[1]->getNodalValue("plasticStrain", 0);
+          //double scalar2 = nnpoint[2]->getNodalValue("plasticStrain", 0);
+          double scalar0 = nnpoint[0]->New->disp(1);
+          double scalar1 = nnpoint[1]->New->disp(1);
+          double scalar2 = nnpoint[2]->New->disp(1);
+
+          tgt_scalar[n] = interpolate_scalar(tgt_nodes[n], pp[0], pp[1], pp[2], scalar0, scalar1, scalar2);         
+          //double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);          
+          /*
+            double scalar0 = source_scalars[v0];
+            double scalar1 = source_scalars[v1];
+            double scalar2 = source_scalars[v2];
+            double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);
+            std::cout << "Interpolated scalar at (" << target[0] << ", " << target[1] << ") = " 
+                      << interpolated_value << "\n";
+          */
+            cout << "FOUND ELEMENT "<< i << "OF ORIG MESH FOR NODE "<<n<<endl;
+            cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
+            cout << "TRIANGLE NODES: "<<nnpoint[0]->coords(0)<<", "<<nnpoint[0]->coords(1)<<endl<<
+                                        nnpoint[1]->coords(0)<<", "<<nnpoint[1]->coords(1)<<endl<<
+                                        nnpoint[2]->coords(0)<<", "<<nnpoint[2]->coords(1)<<endl;
+            found = true;
+
+        } //lambdas        
+        
+        }//Connectivity pass
+         
+      i++;
+    }//Elements number
+  
+    if (!found) {
+        cout << "ERROR, Node "<<n<< "OUTSIDE MESH"<<endl;
+        cout << "COORDS "<<tgt_nodes[n][0]<<", " <<tgt_nodes[n][1]<<endl;
+        //std::cout << "Point (" << target[0] << ", " << target[1] << ") is outside the mesh.\n";
+        nf_nodes++;
+    }
+    
+  }//Node number
+  cout << "NOT FOUND NODES: "<<nf_nodes<<endl;
+  cout << "real  tri count "<<nt_corr<<endl;
+
+  
+  this->delAllData(); 
+  
+  ///// DELETE FIRST CURRENT DOMAIN!
+  Domain *dom = new Domain();
+  Global_Structure->setDomain( dom);
+  cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
+    
+
+  for(k=1; k<=np; k++) 
+    Global_Structure->createNode(k-1, get<0>(tgt_nodes[k-1]), get<1>(tgt_nodes[k-1]), 0.0);
+
+  
+  for (int tri=0;tri<mmgMesh->nt;tri++)
+    Global_Structure->createElement(tri,get<0>(tgt_trias[tri]),
+                                        get<1>(tgt_trias[tri]),
+                                        get<2>(tgt_trias[tri]) 
+                                        );
+  for(int k=0; k<np; k++) 
+    //for (int c=0;c<2;c++)
+    Global_Structure->getNode(k)->New->disp(1) = tgt_scalar[k];
   
   VtkInterface out;
   out.openFile("test.vtk");
@@ -1655,9 +1841,5 @@ void Structure::reMesh()
   MMG2D_Free_all(MMG5_ARG_start,
                  MMG5_ARG_ppMesh,&mmgMesh,MMG5_ARG_ppMet,&mmgSol,
                  MMG5_ARG_end);
-  
-     
-//  return 0;
-  
-  /// AFTER REMAP
+
 }

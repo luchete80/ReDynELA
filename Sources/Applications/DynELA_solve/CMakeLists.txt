@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
 	${SOURCE_LIBRARY_DIRECTORY}/finiteElement
 	${SOURCE_LIBRARY_DIRECTORY}/interpretor
   ${SOURCE_LIBRARY_DIRECTORY}/lsdyna)
-
+  
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
 #ADD_DEFINITIONS(-Wall -O2)
@@ -40,3 +40,5 @@ TARGET_LINK_LIBRARIES(test_contact_1time_rmsh mmg dnlFE dnlLA dnlBT lapack lsdyn
 
 ADD_EXECUTABLE(test_contact_solver_amr test_contact_solver_amr.cpp)
 TARGET_LINK_LIBRARIES(test_contact_solver_amr mmg dnlFE dnlLA dnlBT lapack lsdyna)
+
+
