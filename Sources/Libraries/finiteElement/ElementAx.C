@@ -110,6 +110,7 @@ void ElementAx::getdU_atIntPoint(Tensor2 &du, int t)
 void ElementAx::getF_atIntPoint(Tensor2 &du, int t)
 //-----------------------------------------------------------------------------
 {
+  cout << "CALCULATING dF"<<endl;
   NodalField *field;
   Indice k;
   Real v;
@@ -129,10 +130,14 @@ void ElementAx::getF_atIntPoint(Tensor2 &du, int t)
     du(1, 1) += ref->dN(k, 1) * field->delta_disp(1);
     v += ref->data->shapeFunction(k) * field->delta_disp(0);
   }
-
+  cout << "dU "<<du(0, 0) <<", "<<du(0, 1) <<", "<<du(0, 2) <<", "<<endl;
+  cout << "dU "<<du(1, 0) <<", "<<du(1, 1) <<", "<<du(1, 2) <<", "<<endl;
+  cout << "dU "<<du(2, 0) <<", "<<du(2, 1) <<", "<<du(2, 2) <<", "<<endl;
   // calcul du terme axisym�trique
   getRadius_atIntPoint(R);
   du(2, 2) += v / R;
+  
+  cout << "DONE "<<endl;
 }
 
 //-----------------------------------------------------------------------------

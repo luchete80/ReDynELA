@@ -155,11 +155,12 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Strains compute");
 #endif
+  cout << "STRAINS "<<endl;
             computeStrains();
 #ifdef computeTimes
             //recordTimes.stop("Strains compute");
 #endif
-
+  cout << "DONE "<<endl;
             // calcul du domaine parent et de det J
 #ifdef computeTimes
             //recordTimes.start("DetJ computation");

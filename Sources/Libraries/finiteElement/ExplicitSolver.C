@@ -100,6 +100,7 @@ void ExplicitSolver::solve(Real _upTime)
       upTime = _upTime;
       //cout << "Matrices"<<endl;
       // premier calcul de determinant
+cout <<"INTERNAL MATS"<<endl;
       domain->computeInternalMatrices();
 
       //cout << "DONE "<<endl;
@@ -112,6 +113,7 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Time step");
 #endif
+
             computeTimeStep();
 #ifdef computeTimes
             //recordTimes.stop("Time step");
@@ -153,6 +155,7 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Strains compute");
 #endif
+
             computeStrains();
 #ifdef computeTimes
             //recordTimes.stop("Strains compute");
@@ -162,6 +165,7 @@ void ExplicitSolver::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("DetJ computation");
 #endif
+
             domain->computeInternalMatrices();
 #ifdef computeTimes
             //recordTimes.stop("DetJ computation");

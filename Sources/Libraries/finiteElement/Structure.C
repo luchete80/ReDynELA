@@ -846,7 +846,7 @@ void Structure::solve()
   }
 
   nextTime = 0;
-
+  cout << "SOLVING "<<endl;
   // Only one domain
   if (domains.size() == 1)
   {
@@ -856,7 +856,7 @@ void Structure::solve()
 
       // what is the next time
       nextTime = Global_Structure->nextSaveTime;
-
+      
       // lancement du solveur
       if (domains(0)->solve(nextTime) == False)
       {
@@ -894,7 +894,7 @@ void Structure::solve()
       Global_Structure->saveResults();
     }
   }
-
+  
   // final result if available
   Global_Structure->saveResults();
 
