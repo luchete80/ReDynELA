@@ -41,4 +41,7 @@ TARGET_LINK_LIBRARIES(test_contact_1time_rmsh mmg dnlFE dnlLA dnlBT lapack lsdyn
 ADD_EXECUTABLE(test_contact_solver_amr test_contact_solver_amr.cpp)
 TARGET_LINK_LIBRARIES(test_contact_solver_amr mmg dnlFE dnlLA dnlBT lapack lsdyna)
 
+ADD_EXECUTABLE(test_tri test_tri.cpp)
+TARGET_LINK_LIBRARIES(test_tri mmg dnlFE dnlLA dnlBT lapack lsdyna)
+
 

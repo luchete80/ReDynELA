@@ -28,6 +28,7 @@
 // elements 2D
 #include <ElQua4n2D.h>
 #include <ElTri3n2D.h>
+#include <ElTri3nAx.h>
 
 // elements axisym�triques
 #include <ElQua4nAx.h>

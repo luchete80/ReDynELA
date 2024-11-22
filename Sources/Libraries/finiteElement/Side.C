@@ -118,22 +118,27 @@ void Side::Init()
     cout << "SIDE INIT, Node " << i <<" ELement size"<<pnd->elements.size()<<endl;
     for (j = 0; j < pnd->elements.size(); j++)
     {
-      cout << "Element node size "<<pnd->elements.size()<<endl;
+      cout << "Node "<<pnd->Id<<endl;
+      cout << "Node elements size "<<pnd->elements.size()<<endl;
       pel = pnd->elements(j);
-
+      cout << "Node Element " << j << ",id "<< pel->Id<<endl;
       // si mod�le plan
       if (pel->getNumberOfFaces() != 1)
         fatalError("Side::Init", "not for 3D elements\n");
       // test if complete
       //	  for (k=0;k<pel->noSideFaces;k++)
+      cout << "SIDE FACES "<< pel->getNumberOfSideFaces()<<endl;
       for (k = 0; k < pel->getNumberOfSideFaces(); k++)
       {
+        cout << "ELEENT SIDE FACE "<<k<<endl;
         toHave = pel->getNumberOfNodesOnSideFace(k);
         getted = 0;
         ok = False;
+        cout << "To have "<<toHave<<" nodes"<<endl;
         for (l = 0; l < toHave; l++)
         {
           // face contains node
+          cout << "Node on side face "<<pel->getNodeOnSideFace(k, l)->Id<<endl;
           if (pel->getNodeOnSideFace(k, l) == pnd)
           {
             ok = True;
@@ -170,6 +175,7 @@ void Side::Init()
               psf->addNode(pel->getNodeOnSideFace(k, l));
               // face contains node
             }
+            cout << "added node "<<pel->getNodeOnSideFace(k, l)->Id<<endl;
             sides << psf;
           }
         }

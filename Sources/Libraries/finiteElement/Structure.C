@@ -241,6 +241,9 @@ void Structure::createElement(Indice num, ...)
   case Element::ElTri3n2D:
     pel = new ElTri3n2D(num);
     break;
+  case Element::ElTri3nAx:
+    pel = new ElTri3nAx(num);
+    break;
   case Element::ElQua4nAx:
     pel = new ElQua4nAx(num);
     break;
@@ -1440,8 +1443,22 @@ inline void Interp_NodalField(NodalField *fnew,
   
   
   fnew->disp = interp_vector(lambdas, o0->disp, o1->disp, o2->disp);    
+  fnew->delta_disp = interp_vector(lambdas, o0->delta_disp, o1->delta_disp, o2->delta_disp);    
+  
   fnew->ro =   interp_scalar(lambdas, o0->ro, o1->ro, o2->ro);   
+  fnew->dro =   interp_scalar(lambdas, o0->dro, o1->ro, o2->dro);   
+  
   fnew->mat_speed =   interp_vector(lambdas, o0->mat_speed, o1->mat_speed, o2->mat_speed);   
+  
+  fnew->dmat_speed = interp_vector(lambdas, o0->dmat_speed, o1->dmat_speed, o2->dmat_speed);  
+  fnew->fe = interp_vector(lambdas, o0->fe, o1->fe, o2->fe);  
+  
+  fnew->e  =   interp_scalar(lambdas, o0->e, o1->e, o2->e);  
+  fnew->de =   interp_scalar(lambdas, o0->de, o1->de, o2->de);  
+  
+  fnew->T    =   interp_scalar(lambdas, o0->T, o1->T, o2->T); 
+  fnew->flux =   interp_vector(lambdas, o0->flux, o1->flux, o2->flux); 
+  
 }
 
 void Structure::reMesh()
@@ -1703,7 +1720,7 @@ void Structure::reMesh()
   
   /////////////////////////////////// MAPPING
   std::vector <NodalField> fnew(np);
-   std::vector <NodalField> fcur(np);
+  std::vector <NodalField> fcur(np);
   
   int nf_nodes = 0;
   //LOOP TROUGH TARGET POINTS; TO CHECK IN WHICH ELEMENT IS INSIDE
@@ -1770,6 +1787,9 @@ void Structure::reMesh()
                                                                                nnpoint[2]->New->disp);  
                                                                                
           Interp_NodalField(&fnew[n], lambdas,nnpoint[0]->New, nnpoint[1]->New,nnpoint[2]->New);
+          Interp_NodalField(&fcur[n], lambdas,nnpoint[0]->Current, 
+                                              nnpoint[1]->Current,
+                                              nnpoint[2]->Current);
           //fnew[n].ro = 0 0.;
           //tgt_scalar[n] = interpolate_scalar(tgt_nodes[n], pp[0], pp[1], pp[2], scalar[0], scalar[1], scalar[2]);         
           //double interpolated_value = interpolate_scalar(target, p0, p1, p2, scalar0, scalar1, scalar2);          

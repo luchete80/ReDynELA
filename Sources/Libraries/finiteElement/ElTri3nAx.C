@@ -61,18 +61,18 @@ const ElementData ElTri3nAx::elementData = {
     {{3, {0, 1, 2}}},
 
     // description des sidefaces de l'�lement
-    4,
+    3,
     {{2, {0, 1}},
      {2, {1, 2}},
-     {2, {2, 3}},
-     {2, {3, 0}}},
+     {2, {2, 0}} /*,
+     {2, {3, 0}}*/},
 
     // description des ar�tes de l'�lement
-    4,
+    3,
     {{2, {0, 1}},
      {2, {1, 2}},
-     {2, {2, 3}},
-     {2, {3, 0}}},
+     {2, {2, 0}}/*,
+     {2, {3, 0}}*/},
 
     // end of data
     "end"};

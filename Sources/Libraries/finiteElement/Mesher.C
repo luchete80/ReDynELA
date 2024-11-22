@@ -87,7 +87,7 @@ BoxMesher::~BoxMesher()
 }
 
 //-----------------------------------------------------------------------------
-void BoxMesher::rectangle(Real lx, Real ly, Indice nx, Indice ny)
+void BoxMesher::rectangle(Real lx, Real ly, Indice nx, Indice ny, bool quad)
 //-----------------------------------------------------------------------------
 {
   if (structure == NULL)
@@ -123,7 +123,17 @@ void BoxMesher::rectangle(Real lx, Real ly, Indice nx, Indice ny)
       x2 = (i + (j * (nx + 1)) + 2);
       x3 = (i + ((j + 1) * (nx + 1)) + 2);
       x4 = (i + ((j + 1) * (nx + 1)) + 1);
-      structure->createElement(nbElements, x1, x2, x3, x4);
-      nbElements++;
+      if (quad){
+        structure->createElement(nbElements, x1, x2, x3, x4);
+        nbElements++;
+      }
+      else{
+        structure->createElement(nbElements, x1, x2, x3); 
+        structure->createElement(nbElements+1, x1, x3, x4);       
+        nbElements+=2;
+      }
+      
+      
+      
     }
 }

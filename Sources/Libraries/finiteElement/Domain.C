@@ -1161,7 +1161,8 @@ Boolean Domain::initSolve()
   // compactage des structures
   nodes.compact();
   elements.compact();
-
+  
+  cout << "INTERFACES "<<endl;
   // verification des interfaces
   for (i = 0; i < interfaces.size(); i++)
   {

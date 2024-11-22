@@ -86,6 +86,7 @@ public:
   VtkInterface *vtk; //new
 
   //Put in structure
+  bool   isRmshOn;
   int    rmsh_max_step_interval;
   double rmsh_max_length;
   double rmsh_max_angle; //distortion

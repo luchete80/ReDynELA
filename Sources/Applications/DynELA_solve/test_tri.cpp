@@ -117,9 +117,8 @@ int main() {
 
 
   Real elem_x, elem_y;
-  Element* el = new ElQua4nAx(1);
+  Element* el = new ElTri3nAx(1);
 
-  Element* el2 = new ElQua4nAx(2);
   Indice *ind = new Indice[4];
   ind[0]=1;ind[1]=2;ind[2]=4;ind[3]=3;
 
@@ -163,7 +162,8 @@ int main() {
   
   //bm.elementType = elementType
   
-  bm.rectangle (1.0,1.0,10,10);
+  bool is_quad = false;
+  bm.rectangle (1.0,1.0,10,10,is_quad);
 
   cout << "Elements created: "<<Global_Structure->getElementsNumber()<<endl;
   cout << "Nodes created: "<<Global_Structure->getNodesNumber()<<endl;
@@ -171,22 +171,26 @@ int main() {
 
   Real i;
   Real j;
-    
-  j = 10;
+  
   /*
+  //
+  cout <<"ELEMENT NODES ON SLAVE"<<endl;
+  ////////TOP SURFACE
+  j = 10;
+  cout <<"Node 0 element size: "<<Global_Structure->getNode(0)->elements.size()<<endl;
   for (int i=0;i<=10;i++) {
     cout << "i j "<<i<<", "<<j<<endl;
     int nind = 11*j+i;
-    int eind = 9*j+i;
+    int eind = 2*9*j + 2*i; //2* is because is a tree
     cout << "node ind , el ind "<<nind<<","<<eind<<endl;
     //if (i>0) Global_Structure->getNode(i)->elements<<Global_Structure->getElement(j*10+i);
     if (i<10) Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind);
     if (i>0)  Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind-1);
     
-    cout << "Node "<< 10*j+i << "element size"<<Global_Structure->getNode(nind)->elements.size()<<endl;
+    cout << "Node "<< Global_Structure->getNode(nind)->Id<< "element size"<<Global_Structure->getNode(nind)->elements.size()<<endl;
   }
   cout << "FIRST ELEMENT INDEX AFTER FIRST BOX "<<Global_Structure->getElementsNumber()+1<<endl; 
-    */      
+       */   
   cout << "Done "<<endl;
 
   int nbNodes=Global_Structure->getNodesNumber()+1;
@@ -194,6 +198,8 @@ int main() {
 
   int nn = nbNodes; //BEFORE CREATION
   
+  
+  /////////////////////////////////////////// TOP PIECE ////////////////////////////////////////////////
   cout << "Node count before top mesh "<<nbNodes<<endl;
   for (j=0;j<=1;j+=1) 
     for (i=0;i<=10;i+=1) {
@@ -229,27 +235,28 @@ int main() {
       x2 = nn+(i + (j * (nx + 1)) + 2);
       x3 = nn+(i + ((j + 1) * (nx + 1)) + 2);
       x4 = nn+(i + ((j + 1) * (nx + 1)) + 1);
-      cout << "x1--x4 "<<x1 <<","<<x2 <<","<<x3 <<","<<x4 <<endl;
-      Global_Structure->createElement(nbElements, x1, x2, x3, x4);
-      nbElements++;
+      //cout << "x1--x4 "<<x1 <<","<<x2 <<","<<x3 <<","<<x4 <<endl;
+      Global_Structure->createElement(nbElements, x1, x2, x3);
+      Global_Structure->createElement(nbElements+1, x1, x3, x4);
+      nbElements+=2;
+      //nbElements++;
     }
   }      
-
-/*
+  cout << "---------------------------------NODES FOR MASTER SURF "<< nel<<endl;
+  ////ELEMENT NDES POR INDENTATION TOOL (MASTER)
   j = 10;
   for (int i=0;i<=10;i++) {
     
     int nind = nn + i;
     int eind = nel+ i;
 
-    cout << "CREATING NODE ELEMENTS FOR MASTER "<<endl;
     cout << "node ind , el ind "<<nind<<","<<eind<<endl;
     if (i<10) Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind);
     //if (i>0)  Global_Structure->getNode(nind)->elements<<Global_Structure->getElement(eind-1);
+    cout<< "Node "<<nind<<", element size "<<Global_Structure->getNode(nind)->elements.size()<<endl;
   }
   
- */   
-  //bm2.rectangle (1.0,0.1,10,1);  
+    
   
   cout << "Elements created: "<<Global_Structure->getElementsNumber()<<endl;
   cout << "Nodes created: "<<Global_Structure->getNodesNumber()<<endl;
@@ -260,11 +267,12 @@ int main() {
    nbNodes = Global_Structure->getNodesNumber();
   cout << "POINTS " << nbNodes << " float\n";
 
+/*
   for (long i = 0; i < nbNodes; i++)
     cout << Global_Structure->getNode(i)->coords(0)
             << " " << Global_Structure->getNode(i)->coords(1) << " "
             <<Global_Structure->getNode(i)->coords(2) << "\n";
-
+*/
 
    cout << "OVERALL ELEMENT NUMBER" << Global_Structure->getElementsNumber()<<endl;
 
@@ -287,10 +295,11 @@ int main() {
 
 
   masterNS.add(122,132); //(TOP)
-
+  cout << "--------------------------------------------------------------------- SETTING SIDES"<<endl;
   masterside.addNodeSet(&masterNS);
   cout << "MASTER NODE SIZE "<<masterside.nodes.size()<<endl;
-
+  
+  cout << "Adding slave node "<<endl;
   slaveside.addNodeSet(&slaveNS);
 
   cout << "Init Side SLAVE "<<endl;
@@ -300,10 +309,14 @@ int main() {
   cl->setFriction(0.0);
   int_body.contactLaw = cl;
   if (int_body.setMaster(&masterside) !=Success) {cout << "set master FAILS"<<endl;}
+  cout << "SETTING SLAVE SIDE "<<endl;
   int_body.setSlave(&slaveside);
-
+  cout << "DONE "<<endl;
+  
   int_body.Init();
+
   Global_Structure->addInterface(&int_body);
+
   //////////////// CONTACT
   //Global_Structure->addInterface(&int_body);
 
@@ -407,7 +420,7 @@ steel.setConductivity(4.6000000E+01);
   //model->solve();
 
 
- omp_set_num_threads(4);
+ omp_set_num_threads(1);
  cout << "THREADS "<<omp_get_max_threads<<endl;
 
 
@@ -437,11 +450,14 @@ steel.setConductivity(4.6000000E+01);
   
   //cout << "STRUCT ELEMENTS "<<Global_Structure->elements.size()<<endl;
   
-  Global_Structure->isRmshOn = true;
-  //Global_Structure->rmsh_max_step_interval = 100;
-  Global_Structure->solve();
+  //Global_Structure->isRmshOn = true;
+  //rmsh_max_step_interval = 100;
   
-  Global_Structure->reMesh();
+  
+  ///////////////////////////////////////////////////////////////
+  //Global_Structure->solve();
+  
+  //Global_Structure->reMesh();
   
   
   

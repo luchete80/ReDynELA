@@ -68,7 +68,7 @@ public:
   ~BoxMesher();
 
   // member functions
-  void rectangle(Real lx, Real ly, Indice nx, Indice ny);
+  void rectangle(Real lx, Real ly, Indice nx, Indice ny, bool quad = true);
 };
 
 #endif

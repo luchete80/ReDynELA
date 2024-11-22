@@ -3,3 +3,4 @@
          - Added gmsh export (like in example )
 20241111 - Added Plastic Strain remesh criteria
          - Added ExplicitSolverRmsh class
+20241122 - Copy fields to new Structure
