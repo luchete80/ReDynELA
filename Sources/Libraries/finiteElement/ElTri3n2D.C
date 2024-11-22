@@ -38,9 +38,9 @@ const ElementData ElTri3n2D::elementData = {
 
     // description des noeuds de l'�lement
     3,
-    {{Vec3D(0, 0, 0), 2, {1, 2}, Vector()},
-     {Vec3D(0, 0, 0), 2, {0, 2}, Vector()},
-     {Vec3D(0, 0, 0), 2, {1, 0}, Vector()}},
+    {{Vec3D(+1, 0, 0), 2, {1, 2}, Vector()},
+     {Vec3D( 0,+1, 0), 2, {0, 2}, Vector()},
+     {Vec3D( 0, 0,+1), 2, {1, 0}, Vector()}},
 
     // description des points d'int�gration
     1,
@@ -173,14 +173,13 @@ void ElTri3n2D::getDerShapeFunctionAtPoint(Matrix &N, const Vec3D &point)
   Real k = point(0);
   Real n = point(1);
 
-  N(0, 0) = -(1. - n) / 4.;
-  N(0, 1) = -(1. - k) / 4.;
-  N(1, 0) = +(1. - n) / 4.;
-  N(1, 1) = -(1. + k) / 4.;
-  N(2, 0) = +(1. + n) / 4.;
-  N(2, 1) = +(1. + k) / 4.;
-  N(3, 0) = -(1. + n) / 4.;
-  N(3, 1) = +(1. - k) / 4.;
+  N(0, 0) = 1.0;
+  N(0, 1) = 0.0;
+  N(1, 0) = 0.0;
+  N(1, 1) = 1.0;
+  N(2, 0) =-1.0;
+  N(2, 1) =-1.0;
+
 }
 
 //! calcul du jacobien, fonctions d'interpolations ...

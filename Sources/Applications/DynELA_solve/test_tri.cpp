@@ -455,7 +455,7 @@ steel.setConductivity(4.6000000E+01);
   
   
   ///////////////////////////////////////////////////////////////
-  //Global_Structure->solve();
+  Global_Structure->solve();
   
   //Global_Structure->reMesh();
   

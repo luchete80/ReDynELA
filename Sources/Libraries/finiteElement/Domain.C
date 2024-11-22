@@ -1170,7 +1170,7 @@ Boolean Domain::initSolve()
     interfaces(i)->Init();
     interfaces(i)->check();
   }
-
+  cout << "INTERFACES OK "<<endl;
   // verification des solveurs
   Real sTime = 0;
   if (solvers.size() > 0)
@@ -1219,13 +1219,14 @@ Boolean Domain::initSolve()
 
   // dimension de la grille
   numberOfDim = elements(0)->getNumberOfDimensions();
-
+  
+  cout << "COMPUTING INTERNAL MATRICES..."<<endl;
   elements.first();
   while ((pel = elements.currentUp()) != NULL)
   {
     pel->computeInternalMatrices(True);
   }
-
+  cout << "DONE "<<endl;
   return (True);
 }
 
