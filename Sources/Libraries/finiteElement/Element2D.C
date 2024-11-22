@@ -96,7 +96,8 @@ void Element2D::computeInternalMatrices(Boolean reference)
         (ref->JxW(0, 0) * ref->JxW(1, 1)) - (ref->JxW(0, 1) * ref->JxW(1, 0));
     if (reference)
       ref->detJ0 = ref->detJ;
-
+    //cout << "ELEMENT "<<"  DET "<<ref->detJ0<<endl; 
+    
     // test de positivite du Jacobien
     if (ref->detJ < 0.)
     {
