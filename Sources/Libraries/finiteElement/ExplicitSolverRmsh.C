@@ -114,12 +114,12 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Time step");
 #endif
-cout << "OMCPUTE STEP, FREQ REP "<<frequencyReports<<endl;
+//cout << "OMCPUTE STEP, FREQ REP "<<frequencyReports<<endl;
             computeTimeStep();
 #ifdef computeTimes
             //recordTimes.stop("Time step");
 #endif
-cout << "DONE "<<endl;
+//cout << "DONE "<<endl;
 
             // affichage de l'incr�ment courant tous les 100 incr�ments
 #ifndef PRINT_Execution_Solve
@@ -139,7 +139,7 @@ cout << "DONE "<<endl;
 #ifdef computeTimes
             //recordTimes.start("Predictions");
 #endif
-cout << "PREDICTION "<<endl;
+//cout << "PREDICTION "<<endl;
             computePredictions();
 #ifdef computeTimes
             //recordTimes.stop("Predictions");
@@ -149,7 +149,7 @@ cout << "PREDICTION "<<endl;
 #ifdef computeTimes
             //recordTimes.start("Grid motion");
 #endif
-cout << "UPDATE GRID "<<endl;
+//cout << "UPDATE GRID "<<endl;
             updateGrid();
 #ifdef computeTimes
             //recordTimes.stop("Grid motion");

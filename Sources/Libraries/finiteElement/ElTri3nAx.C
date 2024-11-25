@@ -49,7 +49,7 @@ const ElementData ElTri3nAx::elementData = {
       {Vec3D(0.333333333333333333, 0.333333333333333333, 0), //COORDS
       2,              //WEIGHT
       Vector(3,0.333333333333333333,0.333333333333333333,0.333333333333333333),       //Vector ShapeFunction
-      Matrix(3,2,1.0,0.0,
+      Matrix(3,2,1.0,0.0,                                                             //derShapeFunction (Node,dim)
                  0.0,1.0,
                  -1.0,-1.0)//Vector derShapeFunction
       } 

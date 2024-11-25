@@ -203,6 +203,7 @@ void VtkInterface::dataWrite()
                pstructure->getNode(j)->New->disp(1) << " "<< 
                pstructure->getNode(j)->New->disp(2) << "\n";
 
+/*
   _stream << "SCALARS " << "EqStress" << " float\n";
   _stream << "LOOKUP_TABLE default\n";
   for (long j = 0; j < nbNodes; j++)
@@ -213,7 +214,7 @@ void VtkInterface::dataWrite()
   _stream << "LOOKUP_TABLE default\n";
   for (long j = 0; j < nbNodes; j++)
     _stream << fixed << pstructure->getNode(j)->getNodalValue("plasticStrain", 0)<<"\n";
-            
+*/            
 /*
   for (int i = 0; i < _outputFields.size(); i++)
   {
@@ -277,10 +278,10 @@ void VtkInterface::write()
   cout << "Node write"<<endl;
   // Write the nodes
   nodesWrite();
-
+  cout << "Element write "<<endl;
   // Write the nodes
   elementsWrite();
-
+  cout << "Data write "<<endl;
   // Write the nodes
   dataWrite();
 }

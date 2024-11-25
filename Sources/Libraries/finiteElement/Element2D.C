@@ -84,6 +84,9 @@ void Element2D::computeInternalMatrices(Boolean reference)
     // calcul de J
     for (k = 0; k < getNumberOfNodes(); k++)
     {
+      //cout << "derShapeFunction("<<k<<", 0)"<<elementData->integrationPoint[pt].derShapeFunction(k, 0)<<endl;
+      //cout << "derShapeFunction("<<k<<", 1)"<<elementData->integrationPoint[pt].derShapeFunction(k, 1)<<endl;
+
       pnd = nodes(k);
       ref->JxW(0, 0) += elementData->integrationPoint[pt].derShapeFunction(k, 0) * pnd->coords(0);
       ref->JxW(0, 1) += elementData->integrationPoint[pt].derShapeFunction(k, 1) * pnd->coords(0);

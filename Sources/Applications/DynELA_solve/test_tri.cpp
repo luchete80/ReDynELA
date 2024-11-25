@@ -426,7 +426,7 @@ steel.setConductivity(4.6000000E+01);
 
  
   //Real stopTime=80.0e-6;
-  Real stopTime=5.0e-2;
+  Real stopTime=5.0e-4;
   Real saveTime=stopTime/40.0;
   solver->setTimes(0.0,stopTime);
   
