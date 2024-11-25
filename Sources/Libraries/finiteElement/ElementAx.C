@@ -110,7 +110,7 @@ void ElementAx::getdU_atIntPoint(Tensor2 &du, int t)
 void ElementAx::getF_atIntPoint(Tensor2 &du, int t)
 //-----------------------------------------------------------------------------
 {
-  cout << "CALCULATING dF"<<endl;
+  //cout << "CALCULATING dF"<<endl;
   NodalField *field;
   Indice k;
   Real v;

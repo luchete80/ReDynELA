@@ -118,18 +118,28 @@ La relation utilis�e pour ce calcul est donn�e par:
 Real ElTri3nAx::getLength()
 //-----------------------------------------------------------------------------
 {
-  Real x31, y42, x24, y31;
-  x31 = nodes(2)->coords(0) - nodes(0)->coords(0);
-  x24 = nodes(1)->coords(0) - nodes(3)->coords(0);
-  y42 = nodes(3)->coords(1) - nodes(1)->coords(1);
-  y31 = nodes(2)->coords(1) - nodes(0)->coords(1);
+  //Real x31, y42, x24, y31;
+  Real d01[2], d12[2], d20[2];
+  for (int i=0;i<2;i++){
+    d01[i] = nodes(0)->coords(i) - nodes(1)->coords(i);
+    d12[i] = nodes(1)->coords(i) - nodes(2)->coords(i);
+    d20[i] = nodes(2)->coords(i) - nodes(0)->coords(i);    
+      
+}
 
   // modif DynELA 0.9.5
   // correction d'un bug, merci Maxima
+  /*
   return ((x31 * y42 +
            x24 * y31) /
           sqrt(2. * (SQ(x24) + SQ(y42) + SQ(x31) +
                      SQ(y31))));
+  */
+  return (0.33333333333*( sqrt(SQ(d01[0])+SQ(d01[1]))+
+                          sqrt(SQ(d12[0])+SQ(d12[1]))+
+                          sqrt(SQ(d20[0])+SQ(d20[1]))
+                        )
+          );
 }
 
 //-----------------------------------------------------------------------------

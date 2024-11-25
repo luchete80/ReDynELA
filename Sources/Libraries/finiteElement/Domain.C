@@ -1620,6 +1620,7 @@ Boolean Domain::add(Element *pel)
 Real Domain::computeCourantTimeStep()
 //-----------------------------------------------------------------------------
 {
+  cout << "OMPUTING ELEMENT LENGTH" <<endl;
   Real len;
   Real Cs, time, crit;
 
@@ -1634,7 +1635,7 @@ Real Domain::computeCourantTimeStep()
 
   for (Indice i = 1; i < elements.size(); i++)
   {
-
+    //cout << "Element length" <<endl;
     // longueur caract�ristique de l'�l�ment
     len = elements(i)->getLength();
 

@@ -109,15 +109,17 @@ void ExplicitSolverRmsh::solve(Real _upTime)
       {
             // incrementation du nombre d'incr�ments
             increment++;
-
+            cout << "increment "<< increment <<endl;
             // calcul du time step minimal de la structure
 #ifdef computeTimes
             //recordTimes.start("Time step");
 #endif
+cout << "OMCPUTE STEP, FREQ REP "<<frequencyReports<<endl;
             computeTimeStep();
 #ifdef computeTimes
             //recordTimes.stop("Time step");
 #endif
+cout << "DONE "<<endl;
 
             // affichage de l'incr�ment courant tous les 100 incr�ments
 #ifndef PRINT_Execution_Solve
@@ -137,6 +139,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Predictions");
 #endif
+cout << "PREDICTION "<<endl;
             computePredictions();
 #ifdef computeTimes
             //recordTimes.stop("Predictions");
@@ -146,6 +149,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Grid motion");
 #endif
+cout << "UPDATE GRID "<<endl;
             updateGrid();
 #ifdef computeTimes
             //recordTimes.stop("Grid motion");
@@ -249,7 +253,6 @@ cout << "DONE; COMP CORR "<<endl;
             //recordTimes.start("Interfaces");
 #endif
 cout << "DONE, SCAN INTERFACES"<<endl;
-            scanInterfaces();
 #ifdef computeTimes
             //recordTimes.stop("Interfaces");
 #endif
