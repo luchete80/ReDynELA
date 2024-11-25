@@ -45,10 +45,15 @@ const ElementData ElTri3nAx::elementData = {
     // description des points d'int�gration
     1,
     //{{Vec3D(-invSqrt3, -invSqrt3, 0),
-    {{Vec3D(0, 0, 0), //COORDS
+    {
+      {Vec3D(0.333333333333333333, 0.333333333333333333, 0), //COORDS
       2,              //WEIGHT
-      Vector(3,0,0,0),       //Vector ShapeFunction
-      Matrix(3,2,1.0,0.0,0.0,1.0,-1.0,-1.0)}},     //Vector derShapeFunction
+      Vector(3,0.333333333333333333,0.333333333333333333,0.333333333333333333),       //Vector ShapeFunction
+      Matrix(3,2,1.0,0.0,
+                 0.0,1.0,
+                 -1.0,-1.0)//Vector derShapeFunction
+      } 
+    },     
 
     // description des points de sous int�gration
     1,

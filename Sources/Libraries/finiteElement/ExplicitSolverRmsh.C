@@ -155,12 +155,12 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Strains compute");
 #endif
-  cout << "STRAINS "<<endl;
+  //cout << "STRAINS "<<endl;
             computeStrains();
 #ifdef computeTimes
             //recordTimes.stop("Strains compute");
 #endif
-  cout << "DONE "<<endl;
+  //cout << "DONE, COMP INTERNAL MATS "<<endl;
             // calcul du domaine parent et de det J
 #ifdef computeTimes
             //recordTimes.start("DetJ computation");
@@ -169,7 +169,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("DetJ computation");
 #endif
-
+  //cout << "DONE, COMP CONSTITUTIVE "<<endl;
             // integration des lois constitutives
 #ifdef computeTimes
             //recordTimes.start("Compute constitutive");
@@ -187,7 +187,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("State law");
 #endif
-
+cout << "COMP STRESS "<<endl;
             // calcul des contraintes
 #ifdef computeTimes
             //recordTimes.start("Stress computation");
@@ -196,7 +196,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("Stress computation");
 #endif
-
+cout << "DONE; COMP MASS "<<endl;
             // integration de la masse
 #ifdef computeTimes
             //recordTimes.start("Mass integration");
@@ -228,6 +228,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Corrections");
 #endif
+cout << "DONE; COMP CORR "<<endl;
             computeCorrections();
 #ifdef computeTimes
             //recordTimes.stop("Corrections");
@@ -247,12 +248,12 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.start("Interfaces");
 #endif
-
+cout << "DONE, SCAN INTERFACES"<<endl;
             scanInterfaces();
 #ifdef computeTimes
             //recordTimes.stop("Interfaces");
 #endif
-
+cout << "DONE, FORCES"<<endl;
             // calcul des efforts de contact
 #ifdef computeTimes
             //recordTimes.start("Contact forces");
@@ -270,7 +271,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
             fprintf(domain->history_file, "%8.4E %8.4E %8.4E %8.4E\n", domain->getCurrentTime(),
                     timeStep, domain->getTotalMass(), domain->getTotalKineticEnergy());
             fflush(domain->history_file);
-
+cout << "DONE, WRITING WHISTORY"<<endl;
 #ifdef computeTimes
             //recordTimes.start("History files");
 #endif
@@ -278,7 +279,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("History files");
 #endif
-
+cout << "DONE, TRANSFER QTIS"<<endl;
             // transfert des valeurs d'un incr�ment a l'autre
 #ifdef computeTimes
             //recordTimes.start("Transfert increment");
