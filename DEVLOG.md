@@ -9,3 +9,7 @@
          - Still remaining: 
          - element->computeGlob2Loc();
          - element->computeBoundBox();
+--------------------------------------------------------
+20241204 - ADDED tethex lib (as submodule, different from mmg which is external)
+         - FIXED mmg (removed link to FE library)
+         - See that in 5.8.0 version built with mingw has tochange some things)

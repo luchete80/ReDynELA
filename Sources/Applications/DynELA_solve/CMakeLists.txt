@@ -21,27 +21,25 @@ LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 # ADD_EXECUTABLE(DynELA_solve ${SRCS})
 # TARGET_LINK_LIBRARIES(DynELA_solve dnlFE dnlLA dnlBT lapack )
 # #INSTALL(TARGETS DynELA_solve DESTINATION ${DynELA_base}/bin)
-
-
-ADD_EXECUTABLE(test element_2d.cpp)
-TARGET_LINK_LIBRARIES(test dnlFE dnlLA dnlBT lapack lsdyna)
-
-
-ADD_EXECUTABLE(test_contact element_2d_contact.cpp)
-TARGET_LINK_LIBRARIES(test_contact dnlFE dnlLA dnlBT lapack lsdyna)
-
-
 link_directories("${MMG_DIR}/lib")
 include_directories("${MMG_DIR}/include")
 
+ADD_EXECUTABLE(test element_2d.cpp)
+TARGET_LINK_LIBRARIES(test dnlFE mmg dnlLA dnlBT lapack lsdyna)
+
+
+ADD_EXECUTABLE(test_contact element_2d_contact.cpp)
+TARGET_LINK_LIBRARIES(test_contact dnlFE mmg dnlLA dnlBT lapack lsdyna)
+
+
 #SINGLE 1 time remesh
 ADD_EXECUTABLE(test_contact_1time_rmsh test_contact_1time_rmsh.cpp)
-TARGET_LINK_LIBRARIES(test_contact_1time_rmsh mmg dnlFE dnlLA dnlBT lapack lsdyna)
+TARGET_LINK_LIBRARIES(test_contact_1time_rmsh dnlFE mmg dnlLA dnlBT lapack lsdyna)
 
 ADD_EXECUTABLE(test_contact_solver_amr test_contact_solver_amr.cpp)
-TARGET_LINK_LIBRARIES(test_contact_solver_amr mmg dnlFE dnlLA dnlBT lapack lsdyna)
+TARGET_LINK_LIBRARIES(test_contact_solver_amr dnlFE mmg dnlLA dnlBT lapack lsdyna)
 
 ADD_EXECUTABLE(test_tri test_tri.cpp)
-TARGET_LINK_LIBRARIES(test_tri mmg dnlFE dnlLA dnlBT lapack lsdyna)
+TARGET_LINK_LIBRARIES(test_tri dnlFE mmg dnlLA dnlBT lapack lsdyna)
 
 

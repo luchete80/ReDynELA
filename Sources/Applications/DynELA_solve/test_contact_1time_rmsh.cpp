@@ -911,7 +911,7 @@ void writeMesh (MMG5_pMesh mmgMesh , char *fname){
   }
 
   nreq = 0; nc = 0;
-  fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
+  //fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
   for(k=1; k<=np; k++) {
     /** b) Vertex recovering */
     if ( MMG2D_Get_vertex(mmgMesh,&(Point[0]),&(Point[1]),
@@ -921,11 +921,11 @@ void writeMesh (MMG5_pMesh mmgMesh , char *fname){
     if ( corner[k] )  nc++;
     if ( required[k] )  nreq++;
   }
-  fprintf(inm,"\nCorners\n%"MMG5_PRId"\n",nc);
+  //fprintf(inm,"\nCorners\n%"MMG5_PRId"\n",nc);
   for(k=1; k<=np; k++) {
     if ( corner[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
   }
-  fprintf(inm,"\nRequiredVertices\n%"MMG5_PRId"\n",nreq);
+  //fprintf(inm,"\nRequiredVertices\n%"MMG5_PRId"\n",nreq);
   for(k=1; k<=np; k++) {
     if ( required[k] )  fprintf(inm,"%"MMG5_PRId" \n",k);
   }
@@ -933,7 +933,7 @@ void writeMesh (MMG5_pMesh mmgMesh , char *fname){
   corner = NULL;
 
   nreq = 0;
-  fprintf(inm,"\nTriangles\n%"MMG5_PRId"\n",nt);
+  //fprintf(inm,"\nTriangles\n%"MMG5_PRId"\n",nt);
   for(k=1; k<=nt; k++) {
     /** d) Triangles recovering */
     if ( MMG2D_Get_triangle(mmgMesh,&(Tria[0]),&(Tria[1]),&(Tria[2]),
