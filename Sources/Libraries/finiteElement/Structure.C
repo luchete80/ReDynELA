@@ -1592,16 +1592,22 @@ void Structure::reMesh()
   ///// SOULUTION
   if ( MMG2D_Set_solSize(mmgMesh,mmgSol,MMG5_Vertex,np,MMG5_Scalar) != 1 )
     exit(EXIT_FAILURE);
+    double max = 0.0;
+    for(int k=1 ; k<=np ; k++)
+      if (Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0)> max)
+        max = Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0);
+    
+
     for(int k=1 ; k<=np ; k++) {
     //if ( MMG2D_Set_scalarSol(mmgSol,0.2,k) != 1 ) exit(EXIT_FAILURE);
     
-    if (MMG2D_Set_scalarSol(mmgSol,0.8-Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0), k) != 1) exit(EXIT_FAILURE);
+    if (MMG2D_Set_scalarSol(mmgSol,0.1*(max-0.9*Global_Structure->getNode(k-1)->getNodalValue("plasticStrain", 0))/max, k) != 1) exit(EXIT_FAILURE);
   }
    
     
   /** Set parameters : for example set the maximal edge size to 0.1 */
   MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmax,0.1);
-
+  //MMG2D_Set_dparameter(mmgMesh,mmgSol,MMG2D_DPARAM_hmin,0.005);
   /** Higher verbosity level */
   //MMG2D_Set_iparameter(mmgMesh,mmgSol,MMG2D_IPARAM_verbose,5);
   
@@ -1617,23 +1623,6 @@ void Structure::reMesh()
 
   if ( MMG2D_Get_meshSize(mmgMesh,&np,&nt,NULL,&na) !=1 )  exit(EXIT_FAILURE); 
   cout << "New node count " << np <<endl;
-
-  ///////////////// NEW: MAYBE IS SLOW
-  //Domain *source = new Domain(*Global_Structure->getCurrentDomain());
-
-  /*
-  //// BEFORE REMAP//////////////////////////////////////
-  this->delAllData(); 
-  
-  
-  
-  ///// DELETE FIRST CURRENT DOMAIN!
-  Domain *dom = new Domain();
-  Global_Structure->setDomain( dom);
-  cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
-  
-  
-  */
 
   
   /* Table to know if a vertex is corner */
@@ -1657,13 +1646,14 @@ void Structure::reMesh()
   
   /////COPY TO DEST
   //std::vector <Node*>                 tgt_nodes(np);
-  std::vector <std::array<double, 2>> tgt_nodes(np);
-    
+  std::vector <std::array<double, 2>> tgt_nodes(np);    
   std::vector <std::array<int, 3>> tgt_trias(nt);  
-  
   std::vector <double>             tgt_scalar(np);
 
-
+  
+  
+  
+  
   nreq = 0; nc = 0;
   //fprintf(inm,"\nVertices\n%"MMG5_PRId"\n",np);
   for(k=1; k<=np; k++) {
@@ -1725,7 +1715,8 @@ void Structure::reMesh()
     }
   }//TRI
   
-  /////////////////////////////////// MAPPING
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////// MAPPING ////////////////////////////////////////////////
   std::vector <NodalField> fnew(np);
   std::vector <NodalField> fcur(np);
   
@@ -1863,19 +1854,22 @@ void Structure::reMesh()
 
   msh.convert();
   cout << "new vertex count "<<msh.get_n_vertices()<<endl;
+  
+  
 
   for(k=0; k<msh.get_n_vertices(); k++) 
     Global_Structure->createNode(k, msh.get_vertex(k).get_coord(0), 
                                     msh.get_vertex(k).get_coord(1), 
                                     0.0);
 
-  for(int t=0; t<msh.get_n_vertices(); t++) 
+  for(int t=0; t<msh.get_n_triangles(); t++) 
     Global_Structure->createElement(t,msh.get_triangle(t).get_vertex(0),
                                       msh.get_triangle(t).get_vertex(1),
                                       msh.get_triangle(t).get_vertex(2)
                                         );
                                         
     msh.write("remsh.msh");
+    np = msh.get_n_vertices();
     
   } else{
   
@@ -1890,13 +1884,13 @@ void Structure::reMesh()
                                         get<1>(tgt_trias[tri]),
                                         get<2>(tgt_trias[tri]) 
                                         );
-  for(int k=0; k<np; k++) 
+  
+   for(int k=0; k<np; k++) 
     //for (int c=0;c<2;c++)
     //Global_Structure->getNode(k)->New->disp(1) = tgt_scalar[k];
-    Global_Structure->getNode(k)->New = &fnew[k];
+    Global_Structure->getNode(k)->New = &fnew[k];   
   
   }
-  
   
   VtkInterface out;
   out.openFile("test.vtk");
