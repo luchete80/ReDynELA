@@ -1824,8 +1824,20 @@ void Structure::reMesh()
   
   bool conv2quads = true;
   if (conv2quads){
+using namespace tethex;
     
-    
+      std::vector<Point> vertices;
+  ///vertices.push_back(Point(0, 0, 0));
+  vertices.push_back(Point(1, 0, 0));
+  vertices.push_back(Point(0, 1, 0));
+
+  std::vector<Triangle> triangles;
+  triangles.push_back(Triangle(0, 1, 2, 11));
+  triangles[0].set_edge(0, 0);
+  triangles[0].set_edge(1, 1);
+  triangles[0].set_edge(2, 2);
+  
+  Mesh mesh2(vertices,triangles);  
     
   } else{
   

@@ -1,6 +1,5 @@
 FILE(GLOB SRCS *.h *.C)
 
-
 ADD_LIBRARY(dnlFE ${SRCS})
 #TARGET_LINK_LIBRARIES(libdnlLA dnlKernel lapacke lapack blas)
 
