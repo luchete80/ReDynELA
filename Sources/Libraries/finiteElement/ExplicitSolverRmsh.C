@@ -191,7 +191,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
 #ifdef computeTimes
             //recordTimes.stop("State law");
 #endif
-cout << "COMP STRESS "<<endl;
+//cout << "COMP STRESS "<<endl;
             // calcul des contraintes
 #ifdef computeTimes
             //recordTimes.start("Stress computation");
@@ -200,7 +200,7 @@ cout << "COMP STRESS "<<endl;
 #ifdef computeTimes
             //recordTimes.stop("Stress computation");
 #endif
-cout << "DONE; COMP MASS "<<endl;
+//cout << "DONE; COMP MASS "<<endl;
             // integration de la masse
 #ifdef computeTimes
             //recordTimes.start("Mass integration");

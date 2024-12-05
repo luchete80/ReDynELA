@@ -42,11 +42,14 @@
 
 #include <map>
 
+
 /** Include the mmg2d library hader file */
 // if the header file is in the "include" directory
 // #include "libmmg2d.h"
 // if the header file is in "include/mmg/mmg2d"
 #include "mmg/mmg2d/libmmg2d.h"
+
+#include "tethex.h"
 
 #define MAX4(a,b,c,d)  (((MAX0(a,b)) > (MAX0(c,d))) ? (MAX0(a,b)) : (MAX0(c,d)))
 #define MAX0(a,b)     (((a) > (b)) ? (a) : (b))
