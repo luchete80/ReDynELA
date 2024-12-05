@@ -253,6 +253,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
             //recordTimes.start("Interfaces");
 #endif
 //cout << "DONE, SCAN INTERFACES"<<endl;
+            scanInterfaces();
 #ifdef computeTimes
             //recordTimes.stop("Interfaces");
 #endif
