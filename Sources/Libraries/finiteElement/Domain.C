@@ -1620,7 +1620,7 @@ Boolean Domain::add(Element *pel)
 Real Domain::computeCourantTimeStep()
 //-----------------------------------------------------------------------------
 {
-  cout << "OMPUTING ELEMENT LENGTH" <<endl;
+  //cout << "OMPUTING ELEMENT LENGTH" <<endl;
   Real len;
   Real Cs, time, crit;
 

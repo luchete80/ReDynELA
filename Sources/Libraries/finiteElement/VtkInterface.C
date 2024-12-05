@@ -78,7 +78,7 @@ void VtkInterface::headerWrite()
   
   ////dynelaData->settings->getValue("DynELA", _name);
   ////dynelaData->settings->getValue("Version", _version);
-  cout << "TEST"<<endl;
+  //cout << "TEST"<<endl;
   _stream << "# vtk DataFile Version 4.0\n";
   _stream << _name + " v." + _version + "\n";
   _stream << "ASCII\n";
@@ -272,16 +272,16 @@ void VtkInterface::dataWrite()
 void VtkInterface::write()
 //-----------------------------------------------------------------------------
 {
-  cout << "Header write"<<endl;
+  //cout << "Header write"<<endl;
   // Header write
   headerWrite();
-  cout << "Node write"<<endl;
+  //cout << "Node write"<<endl;
   // Write the nodes
   nodesWrite();
-  cout << "Element write "<<endl;
+  //cout << "Element write "<<endl;
   // Write the nodes
   elementsWrite();
-  cout << "Data write "<<endl;
+  //cout << "Data write "<<endl;
   // Write the nodes
   dataWrite();
 }

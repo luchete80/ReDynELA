@@ -109,7 +109,7 @@ void ExplicitSolverRmsh::solve(Real _upTime)
       {
             // incrementation du nombre d'incr�ments
             increment++;
-            cout << "increment "<< increment <<endl;
+            //cout << "increment "<< increment <<endl;
             // calcul du time step minimal de la structure
 #ifdef computeTimes
             //recordTimes.start("Time step");

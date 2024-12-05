@@ -3,7 +3,7 @@ FILE(GLOB SRCS *.h *.C)
 ADD_LIBRARY(dnlFE ${SRCS})
 #TARGET_LINK_LIBRARIES(libdnlLA dnlKernel lapacke lapack blas)
 
-#REMESHING
+#REMESHING 
 INCLUDE_DIRECTORIES("${MMG_DIR}/include")
 #TARGET_LINK_LIBRARIES( dnlFE mmg)
 

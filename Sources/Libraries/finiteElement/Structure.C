@@ -35,15 +35,22 @@
 #include <Select.h>
 #include <Boundary.h>
 
-#include "mmg/mmg2d/libmmg2d.h"
 
 #include <NodalField.h>
 
 #define nodeDisplayOnlineFrequency 100
 #define elementDisplayOnlineFrequency 100
 
-Structure *Global_Structure = NULL; // initialisation par défaut sur NULL
+
 extern String parsedFileName;
+
+#include "mmg/mmg2d/libmmg2d.h"
+
+#include "tethex.h"
+
+Structure *Global_Structure = NULL; // initialisation par défaut sur NULL
+
+bool conv2quads = true;  
 //extern CPUrecord //recordTimes;
 
 /*!
@@ -1822,22 +1829,52 @@ void Structure::reMesh()
   Global_Structure->setDomain( dom);
   cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
   
-  bool conv2quads = true;
-  if (conv2quads){
-using namespace tethex;
-    
-      std::vector<Point> vertices;
-  ///vertices.push_back(Point(0, 0, 0));
-  vertices.push_back(Point(1, 0, 0));
-  vertices.push_back(Point(0, 1, 0));
 
-  std::vector<Triangle> triangles;
-  triangles.push_back(Triangle(0, 1, 2, 11));
-  triangles[0].set_edge(0, 0);
-  triangles[0].set_edge(1, 1);
-  triangles[0].set_edge(2, 2);
+  if (conv2quads){
+  tethex::Point point;
+  using namespace tethex;
+    
+  std::vector<tethex::Point> vertices;
+  for(k=0; k<np; k++) 
+    vertices.push_back(tethex::Point(get<0>(tgt_nodes[k]), 
+                                     get<1>(tgt_nodes[k]), 
+                                     0)
+                                     );
+                       
+  //Global_Structure->createNode(k-1, get<0>(tgt_nodes[k-1]), get<1>(tgt_nodes[k-1]), 0.0);
+  ///vertices.push_back(Point(0, 0, 0));
+  //vertices.push_back(Point(1, 0, 0));
+  //vertices.push_back(Point(0, 1, 0));
+
+  std::vector<tethex::Triangle> triangles;
+  for (int tri=0;tri<mmgMesh->nt;tri++)
+    triangles.push_back(Triangle(get<0>(tgt_trias[tri]),
+                                        get<1>(tgt_trias[tri]),
+                                        get<2>(tgt_trias[tri]))
+                        );
+  //triangles.push_back(Triangle(0, 1, 2, 11));
+  //triangles[0].set_edge(0, 0);
+  //triangles[0].set_edge(1, 1);
+  //triangles[0].set_edge(2, 2);
   
-  Mesh mesh2(vertices,triangles);  
+  Mesh msh(vertices,triangles);  
+
+  cout << "old vertex count "<<msh.get_n_vertices()<<endl;
+
+  msh.convert();
+  cout << "new vertex count "<<msh.get_n_vertices()<<endl;
+
+  for(k=0; k<msh.get_n_vertices(); k++) 
+    Global_Structure->createNode(k, msh.get_vertex(k).get_coord(0), 
+                                    msh.get_vertex(k).get_coord(1), 
+                                    0.0);
+
+  for(int t=0; t<msh.get_n_vertices(); t++) 
+    Global_Structure->createElement(t,msh.get_triangle(k).get_vertex(0),
+                                      msh.get_triangle(k).get_vertex(1),
+                                      msh.get_triangle(k).get_vertex(2)
+                                        );
+                                        
     
   } else{
   
