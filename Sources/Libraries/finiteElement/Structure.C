@@ -1870,11 +1870,12 @@ void Structure::reMesh()
                                     0.0);
 
   for(int t=0; t<msh.get_n_vertices(); t++) 
-    Global_Structure->createElement(t,msh.get_triangle(k).get_vertex(0),
-                                      msh.get_triangle(k).get_vertex(1),
-                                      msh.get_triangle(k).get_vertex(2)
+    Global_Structure->createElement(t,msh.get_triangle(t).get_vertex(0),
+                                      msh.get_triangle(t).get_vertex(1),
+                                      msh.get_triangle(t).get_vertex(2)
                                         );
                                         
+    msh.write("remsh.msh");
     
   } else{
   
