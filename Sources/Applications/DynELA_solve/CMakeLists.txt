@@ -33,8 +33,8 @@ TARGET_LINK_LIBRARIES(test_contact dnlFE mmg dnlLA dnlBT lapack lsdyna)
 
 
 #SINGLE 1 time remesh
-ADD_EXECUTABLE(test_contact_1time_rmsh test_contact_1time_rmsh.cpp)
-TARGET_LINK_LIBRARIES(test_contact_1time_rmsh dnlFE mmg dnlLA dnlBT lapack lsdyna)
+#ADD_EXECUTABLE(test_contact_1time_rmsh test_contact_1time_rmsh.cpp)
+#TARGET_LINK_LIBRARIES(test_contact_1time_rmsh dnlFE mmg dnlLA dnlBT lapack lsdyna)
 
 ADD_EXECUTABLE(test_contact_solver_amr test_contact_solver_amr.cpp)
 TARGET_LINK_LIBRARIES(test_contact_solver_amr dnlFE mmg dnlLA dnlBT lapack lsdyna)

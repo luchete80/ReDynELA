@@ -232,7 +232,7 @@ cout << "DONE; COMP MASS "<<endl;
 #ifdef computeTimes
             //recordTimes.start("Corrections");
 #endif
-cout << "DONE; COMP CORR "<<endl;
+//cout << "DONE; COMP CORR "<<endl;
             computeCorrections();
 #ifdef computeTimes
             //recordTimes.stop("Corrections");
@@ -252,11 +252,11 @@ cout << "DONE; COMP CORR "<<endl;
 #ifdef computeTimes
             //recordTimes.start("Interfaces");
 #endif
-cout << "DONE, SCAN INTERFACES"<<endl;
+//cout << "DONE, SCAN INTERFACES"<<endl;
 #ifdef computeTimes
             //recordTimes.stop("Interfaces");
 #endif
-cout << "DONE, FORCES"<<endl;
+//cout << "DONE, FORCES"<<endl;
             // calcul des efforts de contact
 #ifdef computeTimes
             //recordTimes.start("Contact forces");
@@ -274,7 +274,7 @@ cout << "DONE, FORCES"<<endl;
             fprintf(domain->history_file, "%8.4E %8.4E %8.4E %8.4E\n", domain->getCurrentTime(),
                     timeStep, domain->getTotalMass(), domain->getTotalKineticEnergy());
             fflush(domain->history_file);
-cout << "DONE, WRITING WHISTORY"<<endl;
+//cout << "DONE, WRITING WHISTORY"<<endl;
 #ifdef computeTimes
             //recordTimes.start("History files");
 #endif
@@ -282,7 +282,7 @@ cout << "DONE, WRITING WHISTORY"<<endl;
 #ifdef computeTimes
             //recordTimes.stop("History files");
 #endif
-cout << "DONE, TRANSFER QTIS"<<endl;
+//cout << "DONE, TRANSFER QTIS"<<endl;
             // transfert des valeurs d'un incr�ment a l'autre
 #ifdef computeTimes
             //recordTimes.start("Transfert increment");

@@ -1817,10 +1817,18 @@ void Structure::reMesh()
   
   this->delAllData(); 
   
-  ///// DELETE FIRST CURRENT DOMAIN!
+   ///// DELETE FIRST CURRENT DOMAIN!
   Domain *dom = new Domain();
   Global_Structure->setDomain( dom);
   cout << "CURRENT DOMEL  SIZE "<<Global_Structure->getCurrentDomain()->elements.size()<<endl;
+  
+  bool conv2quads = true;
+  if (conv2quads){
+    
+    
+    
+  } else{
+  
     
 
   for(k=1; k<=np; k++) 
@@ -1836,6 +1844,9 @@ void Structure::reMesh()
     //for (int c=0;c<2;c++)
     //Global_Structure->getNode(k)->New->disp(1) = tgt_scalar[k];
     Global_Structure->getNode(k)->New = &fnew[k];
+  
+  }
+  
   
   VtkInterface out;
   out.openFile("test.vtk");
